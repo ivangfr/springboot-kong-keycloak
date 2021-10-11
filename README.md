@@ -1,10 +1,6 @@
 # springboot-kong-keycloak
 
-The goals of this project are:
-
-- Create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) application that manages books, called `book-service`;
-- Use [`Keycloak`](https://www.keycloak.org) as authentication and authorization server;
-- Use [`Kong`](https://konghq.com/kong/) as API gateway that receives requests, checks (together with `Keycloak`) if the requests contain valid access token and, finally, redirects the request to `book-service`.
+The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) application to manage books, called `book-service`. It will only be reachable through [`Kong`](https://konghq.com/kong/) API gateway. In `Kong`, we will install [`kong-oidc`](https://github.com/nokia/kong-oidc) plugin that will enable the communication between `Kong` and [`Keycloak`](https://www.keycloak.org) OpenID Connect Provider. This way, when `Kong` receives a request to `book-service`, it will validate together with `Keycloak` whether it's a valid request or not before redirecting to the upstream service.
 
 ## Project Diagram
 
@@ -14,7 +10,7 @@ The goals of this project are:
 
 - ### book-service
 
-  `Spring Boot` Web application that manages books. [`MongoDB`](https://www.mongodb.com) is used as storage.
+  `Spring Boot` REST API application to manages books. The API is completely open and doesn't have any security. `book-service` uses [`MongoDB`](https://www.mongodb.com) as storage.
 
   Endpoints
   ```
@@ -107,7 +103,7 @@ The goals of this project are:
     docker network rm springboot-kong-keycloak-net
     ```
 
-## Build Kong image with kong-oidc plugin
+## Build Kong Docker Image with kong-oidc plugin
 
 - In a terminal, make use you are in `springboot-kong-keycloak` root folder
 
@@ -141,7 +137,7 @@ The goals of this project are:
   ./init-keycloak.sh
   ```
 
-  This script creates `company-services` realm, `book-service` client and the user `ivan.franchin` with password `123`.
+  This script creates the `company-services` realm, the `book-service` client and a user with _username_ `ivan.franchin` and _password_ `123`.
 
 - The `book-service` client secret (`BOOK_SERVICE_CLIENT_SECRET`) is shown at the end of the execution. It will be used in the next step
 
@@ -161,61 +157,77 @@ The goals of this project are:
   HOST_IP=$(ipconfig getifaddr en0)
   ```
 
-- In order to configure `Kong` for `book-service` application, we can use the script `init-kong.sh`. It creates a service to `book-service`, a route to the service and add the [`kong-oidc`](https://github.com/nokia/kong-oidc) plugin to the route.
+- In order to configure `Kong` for `book-service` application, we will use `init-kong.sh`
+ 
+  It creates a service to `book-service`, a route to the service and add the `kong-oidc` plugin to the route.
 
-  In the third parameter of the script, we can set the `kong-oidc` config property `bearer_only`: if the value is `no`, `Kong` will redirect the user to `Keycloak` login page upon an unauthorized request; if the value is `yes`, `Kong` will introspect tokens without redirecting.
+  In the third parameter of the script, we can set the `kong-oidc` config property `bearer_only`:
+    - if the value is `no`, `Kong` will redirect the user to `Keycloak` login page upon an unauthorized request;
+    - if the value is `yes`, `Kong` will introspect tokens without redirecting.
 
-  1. Setting `no` to `bearer_only`
+  **(1) Setting `no` to `bearer_only`**
     
-     - Run the following command
-       ```
-       ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP "no"
-       ```
+  - Run the following command
+    ```
+    ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP "no"
+    ```
     
-     - In a browser, access http://localhost:8000/book-service/api/books
-     - You will be redirected to `Keycloak` login page
-     - Enter the credentials `ivan.franchin/123`
-     - You should see the list of books (maybe an empty array)
+  - In a browser, access http://localhost:8000/book-service/api/books
+  - You will be redirected to `Keycloak` login page
+  - Enter the credentials `ivan.franchin/123`
+  - You should see the list of books (maybe an empty array)
 
-  1. Setting `yes` (default) to `bearer_only`
+  **(2) Setting "yes" (default) to `bearer_only`**
 
-     - Run the following command
-       ```
-       ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP
-       ```
+  - Run the following command
+    ```
+    ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP
+    ```
 
-     - Try to call `GET /api/books` endpoint without access token
-       ```
-       curl -i http://localhost:8000/book-service/api/books
-       ```
+  - Try to call `GET /api/books` endpoint without access token
+    ```
+    curl -i http://localhost:8000/book-service/api/books
+    ```
 
-       It should return
-       ```
-       HTTP/1.1 401 Unauthorized
-       no Authorization header found
-       ```
+    It should return
+    ```
+    HTTP/1.1 401 Unauthorized
+    no Authorization header found
+    ```
 
-     - Get access token by running the commands below to get an access token for `ivan.franchin`
-       ``
-       ACCESS_TOKEN=$(./get-access-token.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP)
-       echo $ACCESS_TOKEN
-       ```
+  - Get access token by running the commands below to get an access token for `ivan.franchin`
+    ```
+    ACCESS_TOKEN=$(./get-access-token.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP)
+    echo $ACCESS_TOKEN
+    ```
 
-     - Call `GET /api/books` endpoint using access token
-       ```
-       curl -i http://localhost:8000/book-service/api/books -H 'Authorization: Bearer $ACCESS_TOKEN'
-       ```
-    
-       It should return
-       ```
-       HTTP/1.1 200
-       []
-       ```
-       > **Warning:** currently, it's not working. it's returning 
-       > ```
-       > HTTP/1.1 401 Unauthorized
-       > invalid token
-       > ```
+  - Call `GET /api/books` endpoint using access token
+    ```
+    curl -i http://localhost:8000/book-service/api/books -H 'Authorization: Bearer $ACCESS_TOKEN'
+    ```
+
+    It should return
+    ```
+    HTTP/1.1 200
+    []
+    ```
+    > **Warning:** currently, it's not working. it's returning 
+    > ```
+    > HTTP/1.1 401 Unauthorized
+    > invalid token
+    > ```
+
+## Shutdown
+
+Go to the terminal where you run the script `start-docker-containers.sh` and press `q` to stop and remove all containers
+
+## Cleanup
+
+To remove the Docker image created by this project, go to a terminal and run the command below
+```
+docker rmi ivanfranchin/book-service:1.0.0
+docker rmi kong:2.6.0-centos-oidc
+```
 
 ## References
 
