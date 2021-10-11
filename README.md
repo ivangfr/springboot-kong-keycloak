@@ -15,9 +15,9 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
   Endpoints
   ```
   GET /api/books
-  GET /api/books/{id}
-  POST /api/books {"title": "..."}
-  DELETE /api/books/{id}
+  POST /api/books {"isbn": "...", "title": "..."}
+  GET /api/books/{isbn}
+  DELETE /api/books/{isbn}
   GET /actuator/health
   ```
 
@@ -44,9 +44,9 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
 - Open another terminal and call application endpoints
   ```
   curl -i http://localhost:9080/api/books
-  curl -i -X POST http://localhost:9080/api/books -H "Content-Type: application/json" -d '{"title": "Kong & Keycloak"}'
-  curl -i http://localhost:9080/api/books/<BOOK_ID>
-  curl -i -X DELETE http://localhost:9080/api/books/<BOOK_ID>
+  curl -i -X POST http://localhost:9080/api/books -H "Content-Type: application/json" -d '{"isbn": "123", "title": "Kong & Keycloak"}'
+  curl -i http://localhost:9080/api/books/123
+  curl -i -X DELETE http://localhost:9080/api/books/123
   curl -i http://localhost:9080/actuator/health
   ```
 
@@ -86,9 +86,9 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
 - Open another terminal and call application endpoints
   ```
   curl -i http://localhost:9080/api/books
-  curl -i -X POST http://localhost:9080/api/books -H "Content-Type: application/json" -d '{"title": "Kong & Keycloak"}'
-  curl -i http://localhost:9080/api/books/<BOOK_ID>
-  curl -i -X DELETE http://localhost:9080/api/books/<BOOK_ID>
+  curl -i -X POST http://localhost:9080/api/books -H "Content-Type: application/json" -d '{"isbn": "123", "title": "Kong & Keycloak"}'
+  curl -i http://localhost:9080/api/books/123
+  curl -i -X DELETE http://localhost:9080/api/books/123
   curl -i http://localhost:9080/actuator/health
   ```
 
@@ -165,19 +165,7 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
     - if the value is `no`, `Kong` will redirect the user to `Keycloak` login page upon an unauthorized request;
     - if the value is `yes`, `Kong` will introspect tokens without redirecting.
 
-  **(1) Setting `no` to `bearer_only`**
-    
-  - Run the following command
-    ```
-    ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP "no"
-    ```
-    
-  - In a browser, access http://localhost:8000/book-service/api/books
-  - You will be redirected to `Keycloak` login page
-  - Enter the credentials `ivan.franchin/123`
-  - You should see the list of books (maybe an empty array)
-
-  **(2) Setting "yes" (default) to `bearer_only`**
+  **(1) Setting "yes" (default) to `bearer_only`**
 
   - Run the following command
     ```
@@ -195,7 +183,7 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
     no Authorization header found
     ```
 
-  - Get access token by running the commands below to get an access token for `ivan.franchin`
+  - Get `ivan.franchin` access token
     ```
     ACCESS_TOKEN=$(./get-access-token.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP)
     echo $ACCESS_TOKEN
@@ -203,7 +191,7 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
 
   - Call `GET /api/books` endpoint using access token
     ```
-    curl -i http://localhost:8000/book-service/api/books -H 'Authorization: Bearer $ACCESS_TOKEN'
+    curl -i http://localhost:8000/book-service/api/books -H "Authorization: Bearer $ACCESS_TOKEN"
     ```
 
     It should return
@@ -211,11 +199,30 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
     HTTP/1.1 200
     []
     ```
-    > **Warning:** currently, it's not working. it's returning 
-    > ```
-    > HTTP/1.1 401 Unauthorized
-    > invalid token
-    > ```
+
+  - You can try other endpoints using access token
+    ```
+    curl -i -X POST http://localhost:8000/book-service/api/books -H "Authorization: Bearer $ACCESS_TOKEN" \
+      -H "Content-Type: application/json" -d '{"isbn": "123", "title": "Kong & Keycloak"}'
+    
+    curl -i http://localhost:8000/book-service/api/books/123 -H "Authorization: Bearer $ACCESS_TOKEN"
+    
+    curl -i -X DELETE http://localhost:8000/book-service/api/books/123 -H "Authorization: Bearer $ACCESS_TOKEN"
+    
+    curl -i http://localhost:8000/book-service/actuator/health -H "Authorization: Bearer $ACCESS_TOKEN"
+    ```
+
+  **(2) Setting `no` to `bearer_only`**
+
+  - Run the following command
+    ```
+    ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP "no"
+    ```
+
+  - In a browser, access http://localhost:8000/book-service/api/books
+  - You will be redirected to `Keycloak` login page
+  - Enter the credentials `ivan.franchin/123`
+  - You should see the list of books (maybe an empty array)
 
 ## Shutdown
 
@@ -228,6 +235,10 @@ To remove the Docker image created by this project, go to a terminal and run the
 docker rmi ivanfranchin/book-service:1.0.0
 docker rmi kong:2.6.0-centos-oidc
 ```
+
+## TODO
+
+- Find a way to set/get the user that made the request. Maybe using [Request Transformer](https://docs.konghq.com/hub/kong-inc/request-transformer/) plugin?
 
 ## References
 

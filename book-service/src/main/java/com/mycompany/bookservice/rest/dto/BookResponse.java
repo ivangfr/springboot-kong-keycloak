@@ -6,5 +6,6 @@ import lombok.Value;
 public class BookResponse {
 
     String id;
+    String isbn;
     String title;
 }

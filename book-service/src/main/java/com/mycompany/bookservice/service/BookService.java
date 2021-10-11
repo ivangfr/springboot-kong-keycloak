@@ -12,5 +12,5 @@ public interface BookService {
 
     void deleteBook(Book book);
 
-    Book validateAndGetBookById(String id);
+    Book validateAndGetBookByIsbn(String isbn);
 }

@@ -31,10 +31,10 @@ public class BookController {
         return books.stream().map(bookMapper::toBookResponse).collect(Collectors.toList());
     }
 
-    @GetMapping("/{id}")
-    public BookResponse getBookById(@PathVariable String id) {
-        log.info("Get books with id equals to {}", id);
-        Book book = bookService.validateAndGetBookById(id);
+    @GetMapping("/{isbn}")
+    public BookResponse getBookByIsbn(@PathVariable String isbn) {
+        log.info("Get books with isbn equals to {}", isbn);
+        Book book = bookService.validateAndGetBookByIsbn(isbn);
         return bookMapper.toBookResponse(book);
     }
 
@@ -47,10 +47,10 @@ public class BookController {
         return bookMapper.toBookResponse(book);
     }
 
-    @DeleteMapping("/{id}")
-    public BookResponse deleteBook(@PathVariable String id, HttpServletRequest request) {
-        log.info("Delete request made by {} to remove book with id {}", request.getHeader("X-Credential-Username"), id);
-        Book book = bookService.validateAndGetBookById(id);
+    @DeleteMapping("/{isbn}")
+    public BookResponse deleteBook(@PathVariable String isbn, HttpServletRequest request) {
+        log.info("Delete request made by {} to remove book with isbn {}", request.getHeader("X-Credential-Username"), isbn);
+        Book book = bookService.validateAndGetBookByIsbn(isbn);
         bookService.deleteBook(book);
         return bookMapper.toBookResponse(book);
     }

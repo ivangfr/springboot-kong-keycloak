@@ -8,5 +8,8 @@ import javax.validation.constraints.NotBlank;
 public class CreateBookRequest {
 
     @NotBlank
+    private String isbn;
+
+    @NotBlank
     private String title;
 }

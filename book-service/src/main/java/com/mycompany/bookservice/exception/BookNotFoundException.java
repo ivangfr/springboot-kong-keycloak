@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class BookNotFoundException extends RuntimeException {
 
-    public BookNotFoundException(String id) {
-        super(String.format("Book with id '%s' not found.", id));
+    public BookNotFoundException(String isbn) {
+        super(String.format("Book with isbn '%s' not found.", isbn));
     }
 }

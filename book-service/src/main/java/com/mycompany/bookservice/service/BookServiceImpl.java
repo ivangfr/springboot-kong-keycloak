@@ -1,9 +1,11 @@
 package com.mycompany.bookservice.service;
 
+import com.mycompany.bookservice.exception.BookDuplicateIsbnException;
 import com.mycompany.bookservice.exception.BookNotFoundException;
 import com.mycompany.bookservice.model.Book;
 import com.mycompany.bookservice.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +23,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book saveBook(Book book) {
-        return bookRepository.save(book);
+        try {
+            return bookRepository.save(book);
+        } catch (DuplicateKeyException e) {
+            throw new BookDuplicateIsbnException(book.getIsbn());
+        }
     }
 
     @Override
@@ -30,7 +36,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book validateAndGetBookById(String id) {
-        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+    public Book validateAndGetBookByIsbn(String isbn) {
+        return bookRepository.findByIsbn(isbn).orElseThrow(() -> new BookNotFoundException(isbn));
     }
 }
