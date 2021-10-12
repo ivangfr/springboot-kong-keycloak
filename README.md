@@ -14,11 +14,11 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
 
   Endpoints
   ```
+  GET /actuator/health
   GET /api/books
   POST /api/books {"isbn": "...", "title": "..."}
   GET /api/books/{isbn}
   DELETE /api/books/{isbn}
-  GET /actuator/health
   ```
 
 ## Prerequisites
@@ -137,7 +137,10 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
   ./init-keycloak.sh
   ```
 
-  This script creates the `company-services` realm, the `book-service` client and a user with _username_ `ivan.franchin` and _password_ `123`.
+  This script creates:
+  - `company-services` realm
+  - `book-service` client
+  - user with _username_ `ivan.franchin` and _password_ `123`
 
 - The `book-service` client secret (`BOOK_SERVICE_CLIENT_SECRET`) is shown at the end of the execution. It will be used in the next step
 
@@ -152,77 +155,65 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
   BOOK_SERVICE_CLIENT_SECRET=...
   ```
 
-- Create an environment variable that contains the machine IP
+- Run the following script to configure `Kong` for `book-service` application
   ```
-  HOST_IP=$(ipconfig getifaddr en0)
+  ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET
+  ```
+  
+  This script creates:
+  - service to `book-service`
+  - route to `/actuator` path
+  - route to `/api` path
+  - add `kong-oidc` plugin to route of `/api` path
+  
+- Try to call the public `GET /actuator/health` endpoint
+  ```
+  curl -i http://localhost:8000/actuator/health -H 'Host: book-service'
   ```
 
-- In order to configure `Kong` for `book-service` application, we will use `init-kong.sh`
- 
-  It creates a service to `book-service`, a route to the service and add the `kong-oidc` plugin to the route.
+  It should return
+  ```
+  HTTP/1.1 200
+  {"status":"UP"}
+  ```
 
-  In the third parameter of the script, we can set the `kong-oidc` config property `bearer_only`:
-    - if the value is `no`, `Kong` will redirect the user to `Keycloak` login page upon an unauthorized request;
-    - if the value is `yes`, `Kong` will introspect tokens without redirecting.
+- Try to call the private `GET /api/books` endpoint without access token
+  ```
+  curl -i http://localhost:8000/api/books -H 'Host: book-service'
+  ```
 
-  **(1) Setting "yes" (default) to `bearer_only`**
+  It should return
+  ```
+  HTTP/1.1 401 Unauthorized
+  no Authorization header found
+  ```
 
-  - Run the following command
-    ```
-    ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP
-    ```
+- Get `ivan.franchin` access token
+  ```
+  ACCESS_TOKEN=$(./get-access-token.sh $BOOK_SERVICE_CLIENT_SECRET)
+  echo $ACCESS_TOKEN
+  ```
 
-  - Try to call `GET /api/books` endpoint without access token
-    ```
-    curl -i http://localhost:8000/book-service/api/books
-    ```
+- Call again the private `GET /api/books` endpoint using the access token
+  ```
+  curl -i http://localhost:8000/api/books -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
+  ```
 
-    It should return
-    ```
-    HTTP/1.1 401 Unauthorized
-    no Authorization header found
-    ```
+  It should return
+  ```
+  HTTP/1.1 200
+  []
+  ```
 
-  - Get `ivan.franchin` access token
-    ```
-    ACCESS_TOKEN=$(./get-access-token.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP)
-    echo $ACCESS_TOKEN
-    ```
-
-  - Call `GET /api/books` endpoint using access token
-    ```
-    curl -i http://localhost:8000/book-service/api/books -H "Authorization: Bearer $ACCESS_TOKEN"
-    ```
-
-    It should return
-    ```
-    HTTP/1.1 200
-    []
-    ```
-
-  - You can try other endpoints using access token
-    ```
-    curl -i -X POST http://localhost:8000/book-service/api/books -H "Authorization: Bearer $ACCESS_TOKEN" \
-      -H "Content-Type: application/json" -d '{"isbn": "123", "title": "Kong & Keycloak"}'
+- You can try other endpoints using access token
+  ```
+  curl -i -X POST http://localhost:8000/api/books -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN" \
+    -H "Content-Type: application/json" -d '{"isbn": "123", "title": "Kong & Keycloak"}'
     
-    curl -i http://localhost:8000/book-service/api/books/123 -H "Authorization: Bearer $ACCESS_TOKEN"
+  curl -i http://localhost:8000/api/books/123 -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
     
-    curl -i -X DELETE http://localhost:8000/book-service/api/books/123 -H "Authorization: Bearer $ACCESS_TOKEN"
-    
-    curl -i http://localhost:8000/book-service/actuator/health -H "Authorization: Bearer $ACCESS_TOKEN"
-    ```
-
-  **(2) Setting `no` to `bearer_only`**
-
-  - Run the following command
-    ```
-    ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET $HOST_IP "no"
-    ```
-
-  - In a browser, access http://localhost:8000/book-service/api/books
-  - You will be redirected to `Keycloak` login page
-  - Enter the credentials `ivan.franchin/123`
-  - You should see the list of books (maybe an empty array)
+  curl -i -X DELETE http://localhost:8000/api/books/123 -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
+  ```
 
 ## Shutdown
 
@@ -235,10 +226,6 @@ To remove the Docker image created by this project, go to a terminal and run the
 docker rmi ivanfranchin/book-service:1.0.0
 docker rmi kong:2.6.0-centos-oidc
 ```
-
-## TODO
-
-- Find a way to set/get the user that made the request. Maybe using [Request Transformer](https://docs.konghq.com/hub/kong-inc/request-transformer/) plugin?
 
 ## References
 

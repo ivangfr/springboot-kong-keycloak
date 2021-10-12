@@ -5,18 +5,15 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-if [ -z "$2" ]; then
-  echo "WARNING: HOST_IP must be informed as 2nd parameter"
-  exit 1
-fi
-
 BOOK_SERVICE_CLIENT_SECRET="$1"
-HOST_IP="$2"
-BEARER_ONLY=${3:-"yes"}
+
+KEYCLOAK_HOST=${2:-keycloak}
+KEYCLOAK_PORT=${3:-8080}
+KEYCLOAK_HOST_PORT="$KEYCLOAK_HOST:$KEYCLOAK_PORT"
 
 echo
 echo "BOOK_SERVICE_CLIENT_SECRET: $BOOK_SERVICE_CLIENT_SECRET"
-echo "HOST_IP: $HOST_IP"
+echo "KEYCLOAK_HOST_PORT: $KEYCLOAK_HOST_PORT"
 
 echo
 echo "Add service"
@@ -31,39 +28,54 @@ BOOK_SERVICE_SERVICE_ID=$(curl -s -X POST http://localhost:8001/services/ \
 echo "BOOK_SERVICE_SERVICE_ID=$BOOK_SERVICE_SERVICE_ID"
 
 echo
-echo "Add Route to Service"
-echo "--------------------"
+echo "Add Public Route to Service"
+echo "---------------------------"
 
-BOOK_SERVICE_ROUTE_ID=$(curl -s -X POST http://localhost:8001/services/book-service/routes/ \
+BOOK_SERVICE_PUBLIC_ROUTE_ID=$(curl -s -X POST http://localhost:8001/services/book-service/routes/ \
   -d "protocols[]=http" \
-  -d "paths[]=/book-service" | jq -r '.id')
+  -d "paths[]=/actuator" \
+  -d "hosts[]=book-service" \
+  -d "strip_path=false" | jq -r '.id')
 
-echo "BOOK_SERVICE_ROUTE_ID=$BOOK_SERVICE_ROUTE_ID"
+echo "BOOK_SERVICE_PUBLIC_ROUTE_ID=$BOOK_SERVICE_PUBLIC_ROUTE_ID"
 
 echo
-echo "Add kong-oidc plugin to route"
-echo "-----------------------------"
+echo "Add Private Route to Service"
+echo "----------------------------"
 
-BOOK_SERVICE_ROUTE_KONG_OIDC_PLUGIN_ID=$(curl -s -X POST http://localhost:8001/routes/$BOOK_SERVICE_ROUTE_ID/plugins \
+BOOK_SERVICE_PRIVATE_ROUTE_ID=$(curl -s -X POST http://localhost:8001/services/book-service/routes/ \
+  -d "protocols[]=http" \
+  -d "paths[]=/api" \
+  -d "hosts[]=book-service" \
+  -d "strip_path=false" | jq -r '.id')
+
+echo "BOOK_SERVICE_PRIVATE_ROUTE_ID=$BOOK_SERVICE_PRIVATE_ROUTE_ID"
+
+echo
+echo "Add kong-oidc plugin to Private Route"
+echo "-------------------------------------"
+
+BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID=$(curl -s -X POST http://localhost:8001/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins \
   -d "name=oidc" \
   -d "config.client_id=book-service" \
-  -d "config.bearer_only=${BEARER_ONLY}" \
+  -d "config.bearer_only=yes" \
   -d "config.client_secret=${BOOK_SERVICE_CLIENT_SECRET}" \
   -d "config.realm=company-services" \
-  -d "config.introspection_endpoint=http://${HOST_IP}:8080/auth/realms/company-services/protocol/openid-connect/token/introspect" \
-  -d "config.discovery=http://${HOST_IP}:8080/auth/realms/company-services/.well-known/openid-configuration" | python -mjson.tool | jq -r '.id')
+  -d "config.introspection_endpoint=http://${KEYCLOAK_HOST_PORT}/auth/realms/company-services/protocol/openid-connect/token/introspect" \
+  -d "config.discovery=http://${KEYCLOAK_HOST_PORT}/auth/realms/company-services/.well-known/openid-configuration" | python -mjson.tool | jq -r '.id')
 
-echo "BOOK_SERVICE_ROUTE_KONG_OIDC_PLUGIN_ID=$BOOK_SERVICE_ROUTE_KONG_OIDC_PLUGIN_ID"
+echo "BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID=$BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID"
 
 echo
 echo "===================="
 echo " To list services: curl http://localhost:8001/services"
-echo "   To list routes: curl http://localhost:8001/services/book-service/routes"
-echo "  To list plugins: curl http://localhost:8001/routes/$BOOK_SERVICE_ROUTE_ID/plugins"
+echo " To list book-service routes: curl http://localhost:8001/services/book-service/routes"
+echo " To list book-service private route plugins: curl http://localhost:8001/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins"
 echo "...................."
 echo " To delete all configuration: "
-echo " curl -X DELETE http://localhost:8001/routes/$BOOK_SERVICE_ROUTE_ID/plugins/$BOOK_SERVICE_ROUTE_KONG_OIDC_PLUGIN_ID"
-echo " curl -X DELETE http://localhost:8001/services/book-service/routes/$BOOK_SERVICE_ROUTE_ID"
+echo " curl -X DELETE http://localhost:8001/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins/$BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID"
+echo " curl -X DELETE http://localhost:8001/services/book-service/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID"
+echo " curl -X DELETE http://localhost:8001/services/book-service/routes/$BOOK_SERVICE_PUBLIC_ROUTE_ID"
 echo " curl -X DELETE http://localhost:8001/services/$BOOK_SERVICE_SERVICE_ID"
 echo "===================="
 echo

@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
-KEYCLOAK_URL=${1:-localhost:8080}
+KEYCLOAK_HOST=${1:-localhost}
+KEYCLOAK_PORT=${2:-8080}
+KEYCLOAK_HOST_PORT="$KEYCLOAK_HOST:$KEYCLOAK_PORT"
 echo
-echo "KEYCLOAK_URL: $KEYCLOAK_URL"
+echo "KEYCLOAK_HOST_PORT: $KEYCLOAK_HOST_PORT"
 
 echo
 echo "Getting admin access token"
 echo "--------------------------"
 
 ADMIN_TOKEN=$(curl -s -X POST \
-  "http://$KEYCLOAK_URL/auth/realms/master/protocol/openid-connect/token" \
+  "http://$KEYCLOAK_HOST_PORT/auth/realms/master/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin" \
   -d 'password=admin' \
@@ -22,7 +24,7 @@ echo
 echo "Creating realm"
 echo "--------------"
 
-curl -i -X POST "http://$KEYCLOAK_URL/auth/admin/realms" \
+curl -i -X POST "http://$KEYCLOAK_HOST_PORT/auth/admin/realms" \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"realm": "company-services", "enabled": true}'
@@ -30,7 +32,7 @@ curl -i -X POST "http://$KEYCLOAK_URL/auth/admin/realms" \
 echo "Creating client"
 echo "---------------"
 
-CLIENT_ID=$(curl -si -X POST "http://$KEYCLOAK_URL/auth/admin/realms/company-services/clients" \
+CLIENT_ID=$(curl -si -X POST "http://$KEYCLOAK_HOST_PORT/auth/admin/realms/company-services/clients" \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"clientId": "book-service", "directAccessGrantsEnabled": true, "rootUrl": "http://localhost:8000", "redirectUris": ["/book-service/*"]}' \
@@ -42,7 +44,7 @@ echo
 echo "Getting client secret"
 echo "---------------------"
 
-BOOK_SERVICE_CLIENT_SECRET=$(curl -s -X POST "http://$KEYCLOAK_URL/auth/admin/realms/company-services/clients/$CLIENT_ID/client-secret" \
+BOOK_SERVICE_CLIENT_SECRET=$(curl -s -X POST "http://$KEYCLOAK_HOST_PORT/auth/admin/realms/company-services/clients/$CLIENT_ID/client-secret" \
   -H "Authorization: Bearer $ADMIN_TOKEN" | jq -r '.value')
 
 echo "BOOK_SERVICE_CLIENT_SECRET=$BOOK_SERVICE_CLIENT_SECRET"
@@ -51,7 +53,7 @@ echo
 echo "Creating user"
 echo "-------------"
 
-USER_ID=$(curl -si -X POST "http://$KEYCLOAK_URL/auth/admin/realms/company-services/users" \
+USER_ID=$(curl -si -X POST "http://$KEYCLOAK_HOST_PORT/auth/admin/realms/company-services/users" \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"username": "ivan.franchin", "enabled": true, "credentials": [{"type": "password", "value": "123", "temporary": false}]}' \
@@ -64,7 +66,7 @@ echo "Getting user access token"
 echo "-------------------------"
 
 curl -s -X POST \
-  "http://$KEYCLOAK_URL/auth/realms/company-services/protocol/openid-connect/token" \
+  "http://$KEYCLOAK_HOST_PORT/auth/realms/company-services/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=ivan.franchin" \
   -d "password=123" \
