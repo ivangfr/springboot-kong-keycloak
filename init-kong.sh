@@ -52,7 +52,7 @@ BOOK_SERVICE_PRIVATE_ROUTE_ID=$(curl -s -X POST http://localhost:8001/services/b
 echo "BOOK_SERVICE_PRIVATE_ROUTE_ID=$BOOK_SERVICE_PRIVATE_ROUTE_ID"
 
 echo
-echo "Add kong-oidc plugin to Private Route"
+echo "Add kong-oidc Plugin to Private Route"
 echo "-------------------------------------"
 
 BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID=$(curl -s -X POST http://localhost:8001/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins \
@@ -67,6 +67,16 @@ BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID=$(curl -s -X POST http://localhos
 echo "BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID=$BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID"
 
 echo
+echo "Add Serverless Function (post-function) to Private Route"
+echo "--------------------------------------------------------"
+
+BOOK_SERVICE_PRIVATE_ROUTE_SERVERLESS_FUNCTION_ID=$(curl -s -X POST http://localhost:8001/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins \
+  -F "name=post-function" \
+  -F "config.access[1]=@kong/serverless/extract-username.lua" | jq -r '.id')
+
+echo "BOOK_SERVICE_PRIVATE_ROUTE_SERVERLESS_FUNCTION_ID=$BOOK_SERVICE_PRIVATE_ROUTE_SERVERLESS_FUNCTION_ID"
+
+echo
 echo "===================="
 echo " To list services: curl http://localhost:8001/services"
 echo " To list book-service routes: curl http://localhost:8001/services/book-service/routes"
@@ -74,6 +84,7 @@ echo " To list book-service private route plugins: curl http://localhost:8001/ro
 echo "...................."
 echo " To delete all configuration: "
 echo " curl -X DELETE http://localhost:8001/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins/$BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID"
+echo " curl -X DELETE http://localhost:8001/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins/$BOOK_SERVICE_PRIVATE_ROUTE_SERVERLESS_FUNCTION_ID"
 echo " curl -X DELETE http://localhost:8001/services/book-service/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID"
 echo " curl -X DELETE http://localhost:8001/services/book-service/routes/$BOOK_SERVICE_PUBLIC_ROUTE_ID"
 echo " curl -X DELETE http://localhost:8001/services/$BOOK_SERVICE_SERVICE_ID"

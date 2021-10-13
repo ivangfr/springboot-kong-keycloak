@@ -112,7 +112,7 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
   docker build -t kong:2.6.0-centos-oidc docker/kong
   ```
 
-## Start environment
+## Start Environment
 
 - In a terminal, make use you are in `springboot-kong-keycloak` root folder
 
@@ -164,7 +164,8 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
   - service to `book-service`
   - route to `/actuator` path
   - route to `/api` path
-  - add `kong-oidc` plugin to route of `/api` path
+  - add `kong-oidc` plugin to route of `/api` path. It will authenticate users against `Keycloak` OpenID Connect Provider
+  - add `serverless function (post-function)` plugin to route of `/api` path. It gets the access token present in the `X-Userinfo` header provided by `kong-oidc` plugin, decoded it, extracts the `username` and `preferred_username`, and enriches the request with these two information before sending to `book-service`
   
 - Try to call the public `GET /actuator/health` endpoint
   ```
@@ -206,12 +207,20 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
   ```
 
 - You can try other endpoints using access token
+
+  Create book
   ```
   curl -i -X POST http://localhost:8000/api/books -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" -d '{"isbn": "123", "title": "Kong & Keycloak"}'
-    
+  ```
+  
+  Get book
+  ```
   curl -i http://localhost:8000/api/books/123 -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
-    
+  ```
+  
+  Delete book 
+  ```
   curl -i -X DELETE http://localhost:8000/api/books/123 -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
   ```
 
