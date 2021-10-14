@@ -87,7 +87,7 @@ docker run -d \
   -e "KONG_ADMIN_ERROR_LOG=/dev/stderr" \
   -e "KONG_ADMIN_LISTEN=0.0.0.0:8001" \
   -e "KONG_ADMIN_LISTEN_SSL=0.0.0.0:8444" \
-  -e "KONG_PLUGINS=oidc,post-function" \
+  -e "KONG_PLUGINS=bundled,oidc" \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   kong:2.6.0-centos-oidc

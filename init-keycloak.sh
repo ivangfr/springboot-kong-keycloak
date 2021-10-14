@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-KEYCLOAK_HOST=${1:-localhost}
-KEYCLOAK_PORT=${2:-8080}
-KEYCLOAK_HOST_PORT="$KEYCLOAK_HOST:$KEYCLOAK_PORT"
+KEYCLOAK_HOST_PORT=${1:-"localhost:8080"}
 echo
 echo "KEYCLOAK_HOST_PORT: $KEYCLOAK_HOST_PORT"
 
@@ -10,8 +8,7 @@ echo
 echo "Getting admin access token"
 echo "--------------------------"
 
-ADMIN_TOKEN=$(curl -s -X POST \
-  "http://$KEYCLOAK_HOST_PORT/auth/realms/master/protocol/openid-connect/token" \
+ADMIN_TOKEN=$(curl -s -X POST "http://$KEYCLOAK_HOST_PORT/auth/realms/master/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin" \
   -d 'password=admin' \
@@ -65,8 +62,7 @@ echo
 echo "Getting user access token"
 echo "-------------------------"
 
-curl -s -X POST \
-  "http://$KEYCLOAK_HOST_PORT/auth/realms/company-services/protocol/openid-connect/token" \
+curl -s -X POST "http://$KEYCLOAK_HOST_PORT/auth/realms/company-services/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=ivan.franchin" \
   -d "password=123" \

@@ -1,6 +1,6 @@
 # springboot-kong-keycloak
 
-The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) application to manage books, called `book-service`. It will only be reachable through [`Kong`](https://konghq.com/kong/) API gateway. In `Kong`, we will install [`kong-oidc`](https://github.com/nokia/kong-oidc) plugin that will enable the communication between `Kong` and [`Keycloak`](https://www.keycloak.org) OpenID Connect Provider. This way, when `Kong` receives a request to `book-service`, it will validate together with `Keycloak` whether it's a valid request or not before redirecting to the upstream service.
+The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) application to manage books, called `book-service`. It will only be reachable through [`Kong`](https://konghq.com/kong/) API gateway. In `Kong`, it's installed [`kong-oidc`](https://github.com/nokia/kong-oidc) plugin that will enable the communication between `Kong` and [`Keycloak`](https://www.keycloak.org) OpenID Connect Provider. This way, when `Kong` receives a request to `book-service`, it will validate together with `Keycloak` whether it's a valid request before redirecting to the upstream service.
 
 ## Project Diagram
 
@@ -107,7 +107,7 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
 
 - In a terminal, make use you are in `springboot-kong-keycloak` root folder
 
-- In order to create the image, run the command below
+- Run the command below
   ```
   docker build -t kong:2.6.0-centos-oidc docker/kong
   ```
@@ -166,7 +166,9 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
   - route to `/api` path
   - add `kong-oidc` plugin to route of `/api` path. It will authenticate users against `Keycloak` OpenID Connect Provider
   - add `serverless function (post-function)` plugin to route of `/api` path. It gets the access token present in the `X-Userinfo` header provided by `kong-oidc` plugin, decoded it, extracts the `username` and `preferred_username`, and enriches the request with these two information before sending to `book-service`
-  
+
+## Testing
+
 - Try to call the public `GET /actuator/health` endpoint
   ```
   curl -i http://localhost:8000/actuator/health -H 'Host: book-service'
