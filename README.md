@@ -2,6 +2,8 @@
 
 The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) application to manage books, called `book-service`. It will only be reachable through [`Kong`](https://konghq.com/kong/) API gateway. In `Kong`, it's installed [`kong-oidc`](https://github.com/nokia/kong-oidc) plugin that will enable the communication between `Kong` and [`Keycloak`](https://www.keycloak.org) OpenID Connect Provider. This way, when `Kong` receives a request to `book-service`, it will validate together with `Keycloak` whether it's a valid request before redirecting to the upstream service.
 
+> **Note:** In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/book-service-kong-keycloak) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
+
 ## Project Diagram
 
 ![project-diagram](documentation/project-diagram.png)
