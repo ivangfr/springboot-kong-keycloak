@@ -9,7 +9,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="echo 'db.stats().ok' | mongo localhost:27017/bookdb --quiet" \
-  mongo:5.0.3
+  mongo:5.0.4
 
 echo "Starting keycloak-database"
 docker run -d \
@@ -21,7 +21,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD}" \
-  mysql:5.7.35
+  mysql:5.7.36
 
 echo "Starting kong-database"
 docker run -d \
@@ -32,7 +32,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="pg_isready -U postgres" \
-  postgres:13.4
+  postgres:13.5
 
 sleep 5
 
