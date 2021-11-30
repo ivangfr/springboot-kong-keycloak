@@ -271,10 +271,9 @@ Go to the terminal where you run the script `start-docker-containers.sh` and pre
 
 ## Cleanup
 
-To remove the Docker image created by this project, go to a terminal and run the command below
+To remove the Docker image created by this project, go to a terminal and, inside `springboot-kong-keycloak` root folder, run the script below
 ```
-docker rmi ivanfranchin/book-service:1.0.0
-docker rmi kong:2.6.0-centos-oidc
+./remove-docker-images.sh
 ```
 
 ## References
