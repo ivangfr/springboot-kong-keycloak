@@ -43,7 +43,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 mongo:5.0.4
+  docker run -d --name mongodb -p 27017:27017 mongo:5.0.5
   ```
 
 - Run the command below to start `book-service`
@@ -81,7 +81,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   ./docker-build.sh
   ```
   | Environment Variable | Description                                                       |
-  | -------------------- | ----------------------------------------------------------------- |
+  |----------------------|-------------------------------------------------------------------|
   | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
   | `MONGODB_PORT`       | Specify port of the `Mongo` database to use (default `27017`)     |
 
@@ -94,7 +94,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:5.0.4
+  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:5.0.5
   ```
 
 - Run the following command to start `book-service` Docker container
@@ -133,7 +133,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below
   ```
-  docker build -t kong:2.6.0-centos-oidc docker/kong
+  docker build -t kong:2.7.0-centos-oidc docker/kong
   ```
 
 ## Start Environment
@@ -145,7 +145,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   ./start-docker-containers.sh
   ```
 
-- Wait for Docker containers to be `healthy`. To check it, run
+- Wait for Docker containers to be up and running. To check it, run
   ```
   docker ps -a
   ```

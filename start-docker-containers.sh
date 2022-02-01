@@ -9,7 +9,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="echo 'db.stats().ok' | mongo localhost:27017/bookdb --quiet" \
-  mongo:5.0.4
+  mongo:5.0.5
 
 echo "Starting keycloak-database"
 docker run -d \
@@ -21,7 +21,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD}" \
-  mysql:5.7.36
+  mysql:5.7.37
 
 echo "Starting kong-database"
 docker run -d \
@@ -50,7 +50,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="curl -f http://localhost:8080/auth || exit 1" \
-  jboss/keycloak:15.0.2
+  jboss/keycloak:16.1.0
 
 echo "Starting book-service"
 docker run -d \
@@ -67,7 +67,7 @@ docker run --rm \
   -e "KONG_PG_HOST=kong-database" \
   -e "KONG_PG_PASSWORD=kong" \
   --network=springboot-kong-keycloak-net \
-  kong:2.6.0-centos kong migrations bootstrap
+  kong:2.7.0-centos kong migrations bootstrap
 
 sleep 3
 
@@ -90,7 +90,7 @@ docker run -d \
   -e "KONG_PLUGINS=bundled,oidc" \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
-  kong:2.6.0-centos-oidc
+  kong:2.7.0-centos-oidc
 
 echo "-------------------------------------------"
 echo "Containers started!"
