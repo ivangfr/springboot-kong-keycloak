@@ -9,7 +9,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="echo 'db.stats().ok' | mongo localhost:27017/bookdb --quiet" \
-  mongo:5.0.5
+  mongo:5.0.6
 
 echo "Starting keycloak-database"
 docker run -d \
@@ -32,7 +32,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="pg_isready -U postgres" \
-  postgres:13.5
+  postgres:13.6
 
 sleep 5
 
@@ -40,17 +40,16 @@ echo "Starting keycloak"
 docker run -d \
   --name keycloak \
   -p 8080:8080 \
-  -e KEYCLOAK_USER=admin \
-  -e KEYCLOAK_PASSWORD=admin \
-  -e DB_VENDOR=mysql \
-  -e DB_ADDR=keycloak-database \
-  -e DB_USER=keycloak \
-  -e DB_PASSWORD=password \
-  -e JDBC_PARAMS=useSSL=false \
+  -e KEYCLOAK_ADMIN=admin \
+  -e KEYCLOAK_ADMIN_PASSWORD=admin \
+  -e KC_DB=mysql \
+  -e KC_DB_URL=jdbc:mysql://keycloak-database/keycloak \
+  -e KC_DB_USERNAME=keycloak \
+  -e KC_DB_PASSWORD=password \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
-  --health-cmd="curl -f http://localhost:8080/auth || exit 1" \
-  jboss/keycloak:16.1.0
+  --health-cmd="curl -f http://localhost:8080/admin || exit 1" \
+  quay.io/keycloak/keycloak:17.0.0 start-dev
 
 echo "Starting book-service"
 docker run -d \
@@ -67,7 +66,7 @@ docker run --rm \
   -e "KONG_PG_HOST=kong-database" \
   -e "KONG_PG_PASSWORD=kong" \
   --network=springboot-kong-keycloak-net \
-  kong:2.7.0-centos kong migrations bootstrap
+  kong:2.7.1-centos kong migrations bootstrap
 
 sleep 3
 
@@ -90,7 +89,7 @@ docker run -d \
   -e "KONG_PLUGINS=bundled,oidc" \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
-  kong:2.7.0-centos-oidc
+  kong:2.7.1-centos-oidc
 
 echo "-------------------------------------------"
 echo "Containers started!"

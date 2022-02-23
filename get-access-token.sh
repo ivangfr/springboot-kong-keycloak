@@ -10,7 +10,7 @@ KEYCLOAK_HOST_PORT=${2:-"keycloak:8080"}
 
 MY_ACCESS_TOKEN_FULL=$(
   docker exec -t keycloak bash -c '
-    curl -s -X POST http://'$KEYCLOAK_HOST_PORT'/auth/realms/company-services/protocol/openid-connect/token \
+    curl -s -X POST http://'$KEYCLOAK_HOST_PORT'/realms/company-services/protocol/openid-connect/token \
       -H "Content-Type: application/x-www-form-urlencoded" \
       -d "username=ivan.franchin" \
       -d "password=123" \

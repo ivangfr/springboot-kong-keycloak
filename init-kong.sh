@@ -59,8 +59,8 @@ BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID=$(curl -s -X POST "http://$KONG_A
   -d "config.bearer_only=yes" \
   -d "config.client_secret=$BOOK_SERVICE_CLIENT_SECRET" \
   -d "config.realm=company-services" \
-  -d "config.introspection_endpoint=http://$KEYCLOAK_HOST_PORT/auth/realms/company-services/protocol/openid-connect/token/introspect" \
-  -d "config.discovery=http://$KEYCLOAK_HOST_PORT/auth/realms/company-services/.well-known/openid-configuration" | python -mjson.tool | jq -r '.id')
+  -d "config.introspection_endpoint=http://$KEYCLOAK_HOST_PORT/realms/company-services/protocol/openid-connect/token/introspect" \
+  -d "config.discovery=http://$KEYCLOAK_HOST_PORT/realms/company-services/.well-known/openid-configuration" | python -mjson.tool | jq -r '.id')
 
 echo "BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID=$BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID"
 
