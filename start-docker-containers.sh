@@ -43,7 +43,8 @@ docker run -d \
   -e KEYCLOAK_ADMIN=admin \
   -e KEYCLOAK_ADMIN_PASSWORD=admin \
   -e KC_DB=mysql \
-  -e KC_DB_URL=jdbc:mysql://keycloak-database/keycloak \
+  -e KC_DB_URL_HOST=keycloak-database \
+  -e KC_DB_URL_DATABASE=keycloak \
   -e KC_DB_USERNAME=keycloak \
   -e KC_DB_PASSWORD=password \
   --restart=unless-stopped \
