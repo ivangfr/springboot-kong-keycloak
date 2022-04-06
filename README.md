@@ -77,9 +77,15 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 - In a terminal, make sure you are in `springboot-kong-keycloak` root folder
 
 - Build Docker Image
-  ```
-  ./docker-build.sh
-  ```
+  - JVM
+    ```
+    ./docker-build.sh
+    ```
+  - Native
+    ```
+    ./docker-build.sh native
+    ```
+
   | Environment Variable | Description                                                       |
   |----------------------|-------------------------------------------------------------------|
   | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
