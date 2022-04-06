@@ -1,6 +1,6 @@
-FROM kong:2.7.1-centos
+FROM kong:2.8.0
 
-LABEL maintainer="ivangfr@yahoo.com.br" description="Kong 2.7.1-centos + kong-oidc plugin"
+LABEL maintainer="ivangfr@yahoo.com.br" description="Kong 2.8.0 + kong-oidc plugin"
 
 USER root
 

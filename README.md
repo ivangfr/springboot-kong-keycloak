@@ -133,7 +133,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below
   ```
-  docker build -t kong:2.7.1-centos-oidc docker/kong
+  docker build -t kong:2.8.0-oidc docker/kong
   ```
 
 ## Start Environment
@@ -143,11 +143,6 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 - Run the following script
   ```
   ./start-docker-containers.sh
-  ```
-
-- Wait for Docker containers to be up and running. To check it, run
-  ```
-  docker ps -a
   ```
 
 > **Note:** `book-service` application is running as a Docker container. The container does not expose any port to HOST machine. So, it cannot be accessed directly, forcing the caller to use `Kong` as gateway server in order to access it.
@@ -280,3 +275,48 @@ To remove the Docker image created by this project, go to a terminal and, inside
 
 - https://www.jerney.io/secure-apis-kong-keycloak-1/
 - https://github.com/d4rkstar/kong-konga-keycloak
+
+## Issues
+
+When upgrading postgres to version `14.x`, there is an error while running `kong-database migration`
+```
+Running kong-database migration
+Error: module 'openssl.rand' not found:No LuaRocks module found for openssl.rand
+	no field package.preload['openssl.rand']
+	no file './openssl/rand.lua'
+	no file './openssl/rand/init.lua'
+	no file './openssl/rand.lua'
+	no file './openssl/rand/init.lua'
+	no file '/usr/local/openresty/site/lualib/openssl/rand.ljbc'
+	no file '/usr/local/openresty/site/lualib/openssl/rand/init.ljbc'
+	no file '/usr/local/openresty/lualib/openssl/rand.ljbc'
+	no file '/usr/local/openresty/lualib/openssl/rand/init.ljbc'
+	no file '/usr/local/openresty/site/lualib/openssl/rand.lua'
+	no file '/usr/local/openresty/site/lualib/openssl/rand/init.lua'
+	no file '/usr/local/openresty/lualib/openssl/rand.lua'
+	no file '/usr/local/openresty/lualib/openssl/rand/init.lua'
+	no file './openssl/rand.lua'
+	no file '/usr/local/openresty/luajit/share/luajit-2.1.0-beta3/openssl/rand.lua'
+	no file '/usr/local/share/lua/5.1/openssl/rand.lua'
+	no file '/usr/local/share/lua/5.1/openssl/rand/init.lua'
+	no file '/usr/local/openresty/luajit/share/lua/5.1/openssl/rand.lua'
+	no file '/usr/local/openresty/luajit/share/lua/5.1/openssl/rand/init.lua'
+	no file '/home/kong/.luarocks/share/lua/5.1/openssl/rand.lua'
+	no file '/home/kong/.luarocks/share/lua/5.1/openssl/rand/init.lua'
+	no file '/usr/local/openresty/site/lualib/openssl/rand.so'
+	no file '/usr/local/openresty/lualib/openssl/rand.so'
+	no file './openssl/rand.so'
+	no file '/usr/local/lib/lua/5.1/openssl/rand.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/openssl/rand.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/home/kong/.luarocks/lib/lua/5.1/openssl/rand.so'
+	no file '/usr/local/openresty/site/lualib/openssl.so'
+	no file '/usr/local/openresty/lualib/openssl.so'
+	no file './openssl.so'
+	no file '/usr/local/lib/lua/5.1/openssl.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/openssl.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/home/kong/.luarocks/lib/lua/5.1/openssl.so'
+
+  Run with --v (verbose) or --vv (debug) for more details
+```

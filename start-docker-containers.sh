@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source scripts/my-functions.sh
+
 echo "Creating network"
 docker network create springboot-kong-keycloak-net
 
@@ -50,7 +52,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="curl -f http://localhost:8080/admin || exit 1" \
-  quay.io/keycloak/keycloak:17.0.0 start-dev
+  quay.io/keycloak/keycloak:17.0.1 start-dev
 
 echo "Starting book-service"
 docker run -d \
@@ -67,7 +69,7 @@ docker run --rm \
   -e "KONG_PG_HOST=kong-database" \
   -e "KONG_PG_PASSWORD=kong" \
   --network=springboot-kong-keycloak-net \
-  kong:2.7.1-centos kong migrations bootstrap
+  kong:2.8.0 kong migrations bootstrap
 
 sleep 3
 
@@ -90,7 +92,9 @@ docker run -d \
   -e "KONG_PLUGINS=bundled,oidc" \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
-  kong:2.7.1-centos-oidc
+  kong:2.8.0-oidc
+
+wait_for_container_log "keycloak" "started in"
 
 echo "-------------------------------------------"
 echo "Containers started!"
