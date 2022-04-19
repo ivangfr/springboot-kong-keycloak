@@ -11,7 +11,7 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="echo 'db.stats().ok' | mongo localhost:27017/bookdb --quiet" \
-  mongo:5.0.6
+  mongo:5.0.7
 
 echo "Starting keycloak-database"
 docker run -d \
@@ -69,7 +69,7 @@ docker run --rm \
   -e "KONG_PG_HOST=kong-database" \
   -e "KONG_PG_PASSWORD=kong" \
   --network=springboot-kong-keycloak-net \
-  kong:2.8.0 kong migrations bootstrap
+  kong:2.8.1 kong migrations bootstrap
 
 sleep 3
 
@@ -92,7 +92,7 @@ docker run -d \
   -e "KONG_PLUGINS=bundled,oidc" \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
-  kong:2.8.0-oidc
+  kong:2.8.1-oidc
 
 wait_for_container_log "keycloak" "started in"
 

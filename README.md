@@ -43,7 +43,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 mongo:5.0.6
+  docker run -d --name mongodb -p 27017:27017 mongo:5.0.7
   ```
 
 - Run the command below to start `book-service`
@@ -100,7 +100,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:5.0.6
+  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:5.0.7
   ```
 
 - Run the following command to start `book-service` Docker container
@@ -139,7 +139,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below
   ```
-  docker build -t kong:2.8.0-oidc docker/kong
+  docker build -t kong:2.8.1-oidc docker/kong
   ```
 
 ## Start Environment
@@ -218,6 +218,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   ```
   ACCESS_TOKEN=$(./get-access-token.sh $BOOK_SERVICE_CLIENT_SECRET) && echo $ACCESS_TOKEN
   ```
+  > **Tip:** In jwt.io, you can decode and verify the `JWT` access token
 
 - Call again the private `GET /api/books` endpoint using the access token
   ```
@@ -261,10 +262,6 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   db.books.find()
   ```
   > Type `exit` to get out of MongoDB shell
-
-- **jwt.io**
-
-  With [jwt.io](https://jwt.io) you can inform the JWT token received from `Keycloak` and the online tool decodes the token, showing its header and payload.
 
 ## Shutdown
 
