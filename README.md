@@ -43,7 +43,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 mongo:5.0.7
+  docker run -d --name mongodb -p 27017:27017 mongo:5.0.8
   ```
 
 - Run the command below to start `book-service`
@@ -53,16 +53,11 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Open another terminal and call application endpoints
   ```
-  curl -i http://localhost:9080/api/books
-  
-  curl -i -X POST http://localhost:9080/api/books -H "Content-Type: application/json" \
-    -d '{"isbn": "123", "title": "Kong & Keycloak"}'
-  
-  curl -i http://localhost:9080/api/books/123
-  
-  curl -i -X DELETE http://localhost:9080/api/books/123
-  
-  curl -i http://localhost:9080/actuator/health
+  curl -i localhost:9080/api/books
+  curl -i -X POST localhost:9080/api/books -H "Content-Type: application/json" -d '{"isbn":"123", "title":"Kong & Keycloak"}'
+  curl -i localhost:9080/api/books/123
+  curl -i -X DELETE localhost:9080/api/books/123
+  curl -i localhost:9080/actuator/health
   ```
 
 - To stop
@@ -100,7 +95,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:5.0.7
+  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:5.0.8
   ```
 
 - Run the following command to start `book-service` Docker container
@@ -110,16 +105,11 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Open another terminal and call application endpoints
   ```
-  curl -i http://localhost:9080/api/books
-  
-  curl -i -X POST http://localhost:9080/api/books -H "Content-Type: application/json" \
-    -d '{"isbn": "123", "title": "Kong & Keycloak"}'
-  
-  curl -i http://localhost:9080/api/books/123
-  
-  curl -i -X DELETE http://localhost:9080/api/books/123
-  
-  curl -i http://localhost:9080/actuator/health
+  curl -i localhost:9080/api/books
+  curl -i -X POST localhost:9080/api/books -H "Content-Type: application/json" -d '{"isbn":"123", "title":"Kong & Keycloak"}'
+  curl -i localhost:9080/api/books/123
+  curl -i -X DELETE localhost:9080/api/books/123
+  curl -i localhost:9080/actuator/health
   ```
 
 - To stop
@@ -133,29 +123,20 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
     docker network rm springboot-kong-keycloak-net
     ```
 
-## Build Kong Docker Image with kong-oidc plugin
-
-- In a terminal, make use you are in `springboot-kong-keycloak` root folder
-
-- Run the command below
-  ```
-  docker build -t kong:2.8.1-oidc docker/kong
-  ```
-
-## Start Environment
+## Initialize Environment
 
 - In a terminal, make use you are in `springboot-kong-keycloak` root folder
 
 - Run the following script
   ```
-  ./start-docker-containers.sh
+  ./init-environment.sh
   ```
 
 > **Note:** `book-service` application is running as a Docker container. The container does not expose any port to HOST machine. So, it cannot be accessed directly, forcing the caller to use `Kong` as gateway server in order to access it.
 
 ## Configure Keycloak
 
-- Open a new terminal and make sure you are in `springboot-kong-keycloak` root folder
+- In a terminal, make sure you are in `springboot-kong-keycloak` root folder
 
 - Run the following script to configure `Keycloak` for `book-service` application
   ```
@@ -196,7 +177,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Try to call the public `GET /actuator/health` endpoint
   ```
-  curl -i http://localhost:8000/actuator/health -H 'Host: book-service'
+  curl -i localhost:8000/actuator/health -H 'Host: book-service'
   ```
   It should return
   ```
@@ -206,7 +187,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Try to call the private `GET /api/books` endpoint without access token
   ```
-  curl -i http://localhost:8000/api/books -H 'Host: book-service'
+  curl -i localhost:8000/api/books -H 'Host: book-service'
   ```
   It should return
   ```
@@ -218,12 +199,11 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   ```
   ACCESS_TOKEN=$(./get-access-token.sh $BOOK_SERVICE_CLIENT_SECRET) && echo $ACCESS_TOKEN
   ```
-  > **Tip:** In jwt.io, you can decode and verify the `JWT` access token
+  > **Tip:** In `jwt.io`, you can decode and verify the `JWT` access token
 
 - Call again the private `GET /api/books` endpoint using the access token
   ```
-  curl -i http://localhost:8000/api/books -H 'Host: book-service' \
-    -H "Authorization: Bearer $ACCESS_TOKEN"
+  curl -i localhost:8000/api/books -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
   ```
   It should return
   ```
@@ -235,21 +215,18 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
   Create book
   ```
-  curl -i -X POST http://localhost:8000/api/books -H 'Host: book-service' \
-    -H "Authorization: Bearer $ACCESS_TOKEN" \
+  curl -i -X POST localhost:8000/api/books -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" -d '{"isbn": "123", "title": "Kong & Keycloak"}'
   ```
   
   Get book
   ```
-  curl -i http://localhost:8000/api/books/123 -H 'Host: book-service' \
-    -H "Authorization: Bearer $ACCESS_TOKEN"
+  curl -i localhost:8000/api/books/123 -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
   ```
   
   Delete book 
   ```
-  curl -i -X DELETE http://localhost:8000/api/books/123 -H 'Host: book-service' \
-    -H "Authorization: Bearer $ACCESS_TOKEN"
+  curl -i -X DELETE localhost:8000/api/books/123 -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
   ```
 
 ## Useful Links & Commands
@@ -265,11 +242,14 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 ## Shutdown
 
-Go to the terminal where you run the script `start-docker-containers.sh` and press `q` to stop and remove all containers
+In a terminal and, inside `springboot-kong-keycloak` root folder, run the following script
+```
+./shutdown-environment.sh
+```
 
 ## Cleanup
 
-To remove the Docker image created by this project, go to a terminal and, inside `springboot-kong-keycloak` root folder, run the script below
+To remove the Docker image created by this project, in a terminal and, inside `springboot-kong-keycloak` root folder, run the script below
 ```
 ./remove-docker-images.sh
 ```

@@ -1,19 +1,31 @@
 #!/usr/bin/env bash
 
+MYSQL_VERSION="5.7.38"
+POSTGRES_VERSION="13.6"
+MONGO_VERSION="5.0.8"
+KEYCLOAK_VERSION="18.0.0"
+KONG_VERSION="2.8.1"
+BOOK_SERVICE_VERSION="1.0.0"
+
+if [[ "$(docker images -q ivanfranchin/book-service:${BOOK_SERVICE_VERSION} 2> /dev/null)" == "" ]] ; then
+  echo "[WARNING] Before initialize the environment, build the book-service Docker image: ./docker-build.sh [native]"
+  exit 1
+fi
+
 source scripts/my-functions.sh
 
+echo
+echo "Starting environment"
+echo "===================="
+
+echo
 echo "Creating network"
+echo "----------------"
 docker network create springboot-kong-keycloak-net
 
-echo "Starting mongodb"
-docker run -d \
-  --name mongodb \
-  --restart=unless-stopped \
-  --network=springboot-kong-keycloak-net \
-  --health-cmd="echo 'db.stats().ok' | mongo localhost:27017/bookdb --quiet" \
-  mongo:5.0.7
-
+echo
 echo "Starting keycloak-database"
+echo "--------------------------"
 docker run -d \
   --name keycloak-database \
   -e MYSQL_DATABASE=keycloak \
@@ -23,9 +35,11 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD}" \
-  mysql:5.7.37
+  mysql:${MYSQL_VERSION}
 
+echo
 echo "Starting kong-database"
+echo "----------------------"
 docker run -d \
   --name kong-database \
   -e POSTGRES_USER=kong \
@@ -34,11 +48,30 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="pg_isready -U postgres" \
-  postgres:13.6
+  postgres:${POSTGRES_VERSION}
 
-sleep 5
+echo
+echo "Starting mongodb"
+echo "----------------"
+docker run -d \
+  --name mongodb \
+  --restart=unless-stopped \
+  --network=springboot-kong-keycloak-net \
+  --health-cmd="echo 'db.stats().ok' | mongo localhost:27017/bookdb --quiet" \
+  mongo:${MONGO_VERSION}
 
+echo
+wait_for_container_log "mongodb" "Waiting for connections"
+
+echo
+wait_for_container_log "kong-database" "port 5432"
+
+echo
+wait_for_container_log "keycloak-database" "port: 3306"
+
+echo
 echo "Starting keycloak"
+echo "-----------------"
 docker run -d \
   --name keycloak \
   -p 8080:8080 \
@@ -52,28 +85,40 @@ docker run -d \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="curl -f http://localhost:8080/admin || exit 1" \
-  quay.io/keycloak/keycloak:17.0.1 start-dev
+  quay.io/keycloak/keycloak:${KEYCLOAK_VERSION} start-dev
 
+echo
 echo "Starting book-service"
+echo "---------------------"
 docker run -d \
   --name book-service \
   -e MONGODB_HOST=mongodb \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
   --health-cmd="curl -f http://localhost:9080/actuator/health || exit 1" \
-  ivanfranchin/book-service:1.0.0
+  ivanfranchin/book-service:${BOOK_SERVICE_VERSION}
 
+echo
 echo "Running kong-database migration"
+echo "-------------------------------"
 docker run --rm \
+  --name kong-database-migration \
   -e "KONG_DATABASE=postgres" \
   -e "KONG_PG_HOST=kong-database" \
   -e "KONG_PG_PASSWORD=kong" \
   --network=springboot-kong-keycloak-net \
-  kong:2.8.1 kong migrations bootstrap
+  kong:${KONG_VERSION} kong migrations bootstrap
 
-sleep 3
+if [[ "$(docker images -q kong:${KONG_VERSION}-oidc 2> /dev/null)" == "" ]]; then
+  echo
+  echo "Building kong docker image with kong-oidc plugin"
+  echo "------------------------------------------------"
+  docker build -t kong:${KONG_VERSION}-oidc docker/kong
+fi
 
+echo
 echo "Starting kong"
+echo "-------------"
 docker run -d \
   --name kong \
   -p 8000:8000 \
@@ -92,25 +137,18 @@ docker run -d \
   -e "KONG_PLUGINS=bundled,oidc" \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
-  kong:2.8.1-oidc
+  kong:${KONG_VERSION}-oidc
 
+echo
+wait_for_container_log "kong" "finished preloading"
+
+echo
+wait_for_container_log "book-service" "Started"
+
+echo
 wait_for_container_log "keycloak" "started in"
 
-echo "-------------------------------------------"
-echo "Containers started!"
-echo "Press 'q' to stop and remove all containers"
-echo "-------------------------------------------"
-while true; do
-    # In the following line -t for timeout, -N for just 1 character
-    read -t 0.25 -N 1 input
-    if [[ ${input} = "q" ]] || [[ ${input} = "Q" ]]; then
-        echo
-        break
-    fi
-done
-
-echo "Removing containers"
-docker rm -fv book-service mongodb keycloak keycloak-database kong kong-database
-
-echo "Removing network"
-docker network rm springboot-kong-keycloak-net
+echo
+echo "Environment Up and Running"
+echo "=========================="
+echo
