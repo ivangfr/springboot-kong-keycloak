@@ -1,4 +1,4 @@
-package com.mycompany.bookservice.model;
+package com.ivanfranchin.bookservice.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

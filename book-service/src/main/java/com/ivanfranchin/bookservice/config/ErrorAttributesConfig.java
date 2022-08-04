@@ -1,4 +1,4 @@
-package com.mycompany.bookservice.config;
+package com.ivanfranchin.bookservice.config;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;

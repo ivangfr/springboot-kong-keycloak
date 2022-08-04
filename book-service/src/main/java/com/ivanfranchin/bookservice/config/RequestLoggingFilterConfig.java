@@ -1,4 +1,4 @@
-package com.mycompany.bookservice.config;
+package com.ivanfranchin.bookservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,7 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter;
 public class RequestLoggingFilterConfig {
 
     @Bean
-    CommonsRequestLoggingFilter logFilter() {
+    public CommonsRequestLoggingFilter logFilter() {
         CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
         filter.setIncludeClientInfo(true);
         filter.setIncludeHeaders(true);

@@ -1,8 +1,8 @@
-package com.mycompany.bookservice.mapper;
+package com.ivanfranchin.bookservice.mapper;
 
-import com.mycompany.bookservice.model.Book;
-import com.mycompany.bookservice.rest.dto.BookResponse;
-import com.mycompany.bookservice.rest.dto.CreateBookRequest;
+import com.ivanfranchin.bookservice.model.Book;
+import com.ivanfranchin.bookservice.rest.dto.BookResponse;
+import com.ivanfranchin.bookservice.rest.dto.CreateBookRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

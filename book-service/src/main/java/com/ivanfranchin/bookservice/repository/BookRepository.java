@@ -1,6 +1,6 @@
-package com.mycompany.bookservice.repository;
+package com.ivanfranchin.bookservice.repository;
 
-import com.mycompany.bookservice.model.Book;
+import com.ivanfranchin.bookservice.model.Book;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

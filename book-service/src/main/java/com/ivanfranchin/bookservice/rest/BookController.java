@@ -1,10 +1,10 @@
-package com.mycompany.bookservice.rest;
+package com.ivanfranchin.bookservice.rest;
 
-import com.mycompany.bookservice.mapper.BookMapper;
-import com.mycompany.bookservice.model.Book;
-import com.mycompany.bookservice.rest.dto.BookResponse;
-import com.mycompany.bookservice.rest.dto.CreateBookRequest;
-import com.mycompany.bookservice.service.BookService;
+import com.ivanfranchin.bookservice.mapper.BookMapper;
+import com.ivanfranchin.bookservice.model.Book;
+import com.ivanfranchin.bookservice.rest.dto.BookResponse;
+import com.ivanfranchin.bookservice.rest.dto.CreateBookRequest;
+import com.ivanfranchin.bookservice.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

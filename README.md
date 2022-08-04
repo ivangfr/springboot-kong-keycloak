@@ -2,7 +2,7 @@
 
 The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) application to manage books, called `book-service` and secure it by using [`Kong`](https://konghq.com/kong/) API gateway and [`Keycloak`](https://www.keycloak.org) OpenID Connect Provider.
 
-> **Note:** In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/book-service-kong-keycloak) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
+> **Note**: In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/book-service-kong-keycloak) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
 
 ## Project Diagram
 
@@ -24,16 +24,16 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
   Endpoints
   ```
-  GET /actuator/health
-  GET /api/books
-  POST /api/books {"isbn": "...", "title": "..."}
-  GET /api/books/{isbn}
+     GET /actuator/health
+     GET /api/books
+    POST /api/books {"isbn": "...", "title": "..."}
+     GET /api/books/{isbn}
   DELETE /api/books/{isbn}
   ```
 
 ## Prerequisites
 
-- [`Java 11+`](https://www.oracle.com/java/technologies/downloads/#java11)
+- [`Java 17+`](https://www.oracle.com/java/technologies/downloads/#java17)
 - [`Docker`](https://www.docker.com/)
 - [`jq`](https://stedolan.github.io/jq)
 
@@ -43,7 +43,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 mongo:5.0.8
+  docker run -d --name mongodb -p 27017:27017 mongo:5.0.10
   ```
 
 - Run the command below to start `book-service`
@@ -95,7 +95,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:5.0.8
+  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:5.0.10
   ```
 
 - Run the following command to start `book-service` Docker container
@@ -132,7 +132,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   ./init-environment.sh
   ```
 
-> **Note:** `book-service` application is running as a Docker container. The container does not expose any port to HOST machine. So, it cannot be accessed directly, forcing the caller to use `Kong` as gateway server in order to access it.
+> **Note**: `book-service` application is running as a Docker container. The container does not expose any port to HOST machine. So, it cannot be accessed directly, forcing the caller to use `Kong` as gateway server in order to access it.
 
 ## Configure Keycloak
 
@@ -199,7 +199,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   ```
   ACCESS_TOKEN=$(./get-access-token.sh $BOOK_SERVICE_CLIENT_SECRET) && echo $ACCESS_TOKEN
   ```
-  > **Tip:** In `jwt.io`, you can decode and verify the `JWT` access token
+  > **Note**: In `jwt.io`, you can decode and verify the `JWT` access token
 
 - Call again the private `GET /api/books` endpoint using the access token
   ```

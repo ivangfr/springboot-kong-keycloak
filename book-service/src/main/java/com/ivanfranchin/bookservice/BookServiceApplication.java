@@ -1,4 +1,4 @@
-package com.mycompany.bookservice;
+package com.ivanfranchin.bookservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

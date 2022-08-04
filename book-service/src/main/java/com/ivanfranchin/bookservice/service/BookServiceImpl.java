@@ -1,9 +1,9 @@
-package com.mycompany.bookservice.service;
+package com.ivanfranchin.bookservice.service;
 
-import com.mycompany.bookservice.exception.BookDuplicateIsbnException;
-import com.mycompany.bookservice.exception.BookNotFoundException;
-import com.mycompany.bookservice.model.Book;
-import com.mycompany.bookservice.repository.BookRepository;
+import com.ivanfranchin.bookservice.exception.BookDuplicateIsbnException;
+import com.ivanfranchin.bookservice.exception.BookNotFoundException;
+import com.ivanfranchin.bookservice.repository.BookRepository;
+import com.ivanfranchin.bookservice.model.Book;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
