@@ -43,7 +43,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 mongo:5.0.10
+  docker run -d --name mongodb -p 27017:27017 mongo:6.0.2
   ```
 
 - Run the command below to start `book-service`
@@ -95,7 +95,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:5.0.10
+  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:6.0.2
   ```
 
 - Run the following command to start `book-service` Docker container
@@ -264,6 +264,7 @@ To remove the Docker image created by this project, in a terminal and, inside `s
 When upgrading postgres to version `14.x`, there is an error while running `kong-database migration`
 ```
 Running kong-database migration
+-------------------------------
 Error: module 'openssl.rand' not found:No LuaRocks module found for openssl.rand
 	no field package.preload['openssl.rand']
 	no file './openssl/rand.lua'

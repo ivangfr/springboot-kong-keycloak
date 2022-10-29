@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-MYSQL_VERSION="5.7.38"
-POSTGRES_VERSION="13.7"
-MONGO_VERSION="5.0.10"
-KEYCLOAK_VERSION="18.0.2"
+MYSQL_VERSION="5.7.40"
+POSTGRES_VERSION="13.8"
+MONGO_VERSION="6.0.2"
+KEYCLOAK_VERSION="19.0.3"
 KONG_VERSION="2.8.1"
 BOOK_SERVICE_VERSION="1.0.0"
 
@@ -57,7 +57,7 @@ docker run -d \
   --name mongodb \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
-  --health-cmd="echo 'db.stats().ok' | mongo localhost:27017/bookdb --quiet" \
+  --health-cmd="echo 'db.stats().ok' | mongosh localhost:27017/bookdb --quiet" \
   mongo:${MONGO_VERSION}
 
 echo
