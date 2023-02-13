@@ -2,7 +2,7 @@
 
 if [ "$1" = "native" ];
 then
-  ./mvnw clean spring-boot:build-image --projects book-service -DskipTests
+  ./mvnw clean -Pnative spring-boot:build-image --projects book-service -DskipTests
 else
   ./mvnw clean compile jib:dockerBuild --projects book-service
 fi

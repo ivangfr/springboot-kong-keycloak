@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-MYSQL_VERSION="5.7.40"
-POSTGRES_VERSION="13.8"
-MONGO_VERSION="6.0.2"
-KEYCLOAK_VERSION="19.0.3"
-KONG_VERSION="2.8.1"
+MYSQL_VERSION="5.7.41"
+POSTGRES_VERSION="13.10"
+MONGO_VERSION="6.0.4"
+KEYCLOAK_VERSION="20.0.3"
+KONG_VERSION="2.8.3"
 BOOK_SERVICE_VERSION="1.0.0"
 
 if [[ "$(docker images -q ivanfranchin/book-service:${BOOK_SERVICE_VERSION} 2> /dev/null)" == "" ]] ; then

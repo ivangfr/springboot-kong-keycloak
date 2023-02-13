@@ -1,6 +1,6 @@
-FROM kong:2.8.1
+FROM kong:2.8.3
 
-LABEL maintainer="ivangfr@yahoo.com.br" description="Kong 2.8.1 + kong-oidc plugin"
+LABEL maintainer="ivangfr@yahoo.com.br" description="Kong 2.8.3 + kong-oidc plugin"
 
 USER root
 
