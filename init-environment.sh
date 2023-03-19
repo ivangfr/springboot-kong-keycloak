@@ -3,7 +3,7 @@
 MYSQL_VERSION="5.7.41"
 POSTGRES_VERSION="13.10"
 MONGO_VERSION="6.0.4"
-KEYCLOAK_VERSION="20.0.3"
+KEYCLOAK_VERSION="21.0.1"
 KONG_VERSION="2.8.3"
 BOOK_SERVICE_VERSION="1.0.0"
 
@@ -84,7 +84,7 @@ docker run -d \
   -e KC_DB_PASSWORD=password \
   --restart=unless-stopped \
   --network=springboot-kong-keycloak-net \
-  --health-cmd="curl -f http://localhost:8080/admin || exit 1" \
+  --health-cmd="curl -f http://localhost:8080/health/ready || exit 1" \
   quay.io/keycloak/keycloak:${KEYCLOAK_VERSION} start-dev
 
 echo

@@ -9,7 +9,7 @@ BOOK_SERVICE_CLIENT_SECRET=$1
 KEYCLOAK_HOST_PORT=${2:-"keycloak:8080"}
 
 MY_ACCESS_TOKEN_FULL=$(
-  docker exec -t keycloak bash -c '
+  docker run -t --rm --network springboot-kong-keycloak-net alpine/curl:latest sh -c '
     curl -s -X POST http://'$KEYCLOAK_HOST_PORT'/realms/company-services/protocol/openid-connect/token \
       -H "Content-Type: application/x-www-form-urlencoded" \
       -d "username=ivan.franchin" \

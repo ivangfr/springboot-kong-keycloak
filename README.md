@@ -6,7 +6,7 @@ The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/
 
 ## Project Diagram
 
-![project-diagram](documentation/project-diagram.png)
+![project-diagram](documentation/project-diagram.jpeg)
 
 As we can see from the diagram, `book-service` will only be reachable through `Kong` API gateway.
 
@@ -14,7 +14,7 @@ In `Kong`, it's installed [`kong-oidc`](https://github.com/nokia/kong-oidc) plug
 
 This way, when `Kong` receives a request to `book-service`, it will validate together with `Keycloak` whether it's a valid request.
 
-Also, before redirecting to the request to the upstream service, a `Serverless Function (post-function)` will get the access token present in the `X-Userinfo` header provided by `kong-oidc` plugin, decoded it, extracts the `username` and `preferred_username`, and enriches the request with these two information before sending to `book-service`
+Also, before redirecting to the request to the upstream service, a `Serverless Function (post-function)` will get the access token present in the `X-Userinfo` header provided by `kong-oidc` plugin, decode it, extract the `username` and `preferred_username`, and enrich the request with these two information before sending to `book-service`
 
 ## Application
 
@@ -261,7 +261,7 @@ To remove the Docker image created by this project, in a terminal and, inside `s
 
 ## Issues
 
-- Unable to put up and running kong 3.x version;
+- Unable to put up and running kong `3.x` version;
 - When upgrading postgres to a version above `13.x` (using current kong version), there is an error while running `kong-database migration`
   ```
   Running kong-database migration
