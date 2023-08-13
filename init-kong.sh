@@ -19,41 +19,37 @@ echo
 echo "Add service"
 echo "-----------"
 
-BOOK_SERVICE_SERVICE_ID=$(curl -s -X POST "http://$KONG_ADMIN_HOST_PORT/services/" \
+curl -i -X POST "http://$KONG_ADMIN_HOST_PORT/services/" \
   -d "name=book-service" \
-  -d "url=http://$BOOK_SERVICE_HOST_PORT" | jq -r '.id')
-
-echo "BOOK_SERVICE_SERVICE_ID=$BOOK_SERVICE_SERVICE_ID"
+  -d "url=http://$BOOK_SERVICE_HOST_PORT"
 
 echo
 echo "Add Public Route to Service"
 echo "---------------------------"
 
-BOOK_SERVICE_PUBLIC_ROUTE_ID=$(curl -s -X POST "http://$KONG_ADMIN_HOST_PORT/services/book-service/routes/" \
+curl -i -X POST "http://$KONG_ADMIN_HOST_PORT/services/book-service/routes/" \
+  -d "name=book-service-public" \
   -d "protocols[]=http" \
   -d "paths[]=/actuator" \
   -d "hosts[]=book-service" \
-  -d "strip_path=false" | jq -r '.id')
-
-echo "BOOK_SERVICE_PUBLIC_ROUTE_ID=$BOOK_SERVICE_PUBLIC_ROUTE_ID"
+  -d "strip_path=false"
 
 echo
 echo "Add Private Route to Service"
 echo "----------------------------"
 
-BOOK_SERVICE_PRIVATE_ROUTE_ID=$(curl -s -X POST "http://$KONG_ADMIN_HOST_PORT/services/book-service/routes/" \
+curl -i -X POST "http://$KONG_ADMIN_HOST_PORT/services/book-service/routes/" \
+  -d "name=book-service-private" \
   -d "protocols[]=http" \
   -d "paths[]=/api" \
   -d "hosts[]=book-service" \
-  -d "strip_path=false" | jq -r '.id')
-
-echo "BOOK_SERVICE_PRIVATE_ROUTE_ID=$BOOK_SERVICE_PRIVATE_ROUTE_ID"
+  -d "strip_path=false"
 
 echo
 echo "Add kong-oidc Plugin to Private Route"
 echo "-------------------------------------"
 
-BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID=$(curl -s -X POST "http://$KONG_ADMIN_HOST_PORT/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins" \
+BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID=$(curl -s -X POST "http://$KONG_ADMIN_HOST_PORT/routes/book-service-private/plugins" \
   -d "name=oidc" \
   -d "config.client_id=book-service" \
   -d "config.bearer_only=yes" \
@@ -68,7 +64,7 @@ echo
 echo "Add Serverless Function (post-function) to Private Route"
 echo "--------------------------------------------------------"
 
-BOOK_SERVICE_PRIVATE_ROUTE_SERVERLESS_FUNCTION_ID=$(curl -s -X POST "http://$KONG_ADMIN_HOST_PORT/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins" \
+BOOK_SERVICE_PRIVATE_ROUTE_SERVERLESS_FUNCTION_ID=$(curl -s -X POST "http://$KONG_ADMIN_HOST_PORT/routes/book-service-private/plugins" \
   -F "name=post-function" \
   -F "config.access[1]=@kong/serverless/extract-username.lua" | jq -r '.id')
 
@@ -76,15 +72,15 @@ echo "BOOK_SERVICE_PRIVATE_ROUTE_SERVERLESS_FUNCTION_ID=$BOOK_SERVICE_PRIVATE_RO
 
 echo
 echo "===================="
-echo "                          List services: curl http://$KONG_ADMIN_HOST_PORT/services"
-echo "               List book-service routes: curl http://$KONG_ADMIN_HOST_PORT/services/book-service/routes"
-echo "List book-service private route plugins: curl http://$KONG_ADMIN_HOST_PORT/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins"
+echo "                          List services: curl -i http://$KONG_ADMIN_HOST_PORT/services"
+echo "               List book-service routes: curl -i http://$KONG_ADMIN_HOST_PORT/services/book-service/routes"
+echo "List book-service private route plugins: curl -i http://$KONG_ADMIN_HOST_PORT/routes/book-service-private/plugins"
 echo "...................."
 echo "Delete all book-service configuration: "
-echo " curl -X DELETE http://$KONG_ADMIN_HOST_PORT/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins/$BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID"
-echo " curl -X DELETE http://$KONG_ADMIN_HOST_PORT/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID/plugins/$BOOK_SERVICE_PRIVATE_ROUTE_SERVERLESS_FUNCTION_ID"
-echo " curl -X DELETE http://$KONG_ADMIN_HOST_PORT/services/book-service/routes/$BOOK_SERVICE_PRIVATE_ROUTE_ID"
-echo " curl -X DELETE http://$KONG_ADMIN_HOST_PORT/services/book-service/routes/$BOOK_SERVICE_PUBLIC_ROUTE_ID"
-echo " curl -X DELETE http://$KONG_ADMIN_HOST_PORT/services/$BOOK_SERVICE_SERVICE_ID"
+echo " curl -i -X DELETE http://$KONG_ADMIN_HOST_PORT/routes/book-service-private/plugins/$BOOK_SERVICE_PRIVATE_ROUTE_KONG_OIDC_PLUGIN_ID"
+echo " curl -i -X DELETE http://$KONG_ADMIN_HOST_PORT/routes/book-service-private/plugins/$BOOK_SERVICE_PRIVATE_ROUTE_SERVERLESS_FUNCTION_ID"
+echo " curl -i -X DELETE http://$KONG_ADMIN_HOST_PORT/services/book-service/routes/book-service-private"
+echo " curl -i -X DELETE http://$KONG_ADMIN_HOST_PORT/services/book-service/routes/book-service-public"
+echo " curl -i -X DELETE http://$KONG_ADMIN_HOST_PORT/services/book-service"
 echo "===================="
 echo
