@@ -10,10 +10,10 @@ On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-C
 
 ## Additional Readings
 
+- \[**Medium**\] [**Using Kong to secure a Simple Spring Boot REST API with Basic Authentication plugin**](https://medium.com/javarevisited/using-kong-to-secure-a-simple-spring-boot-rest-api-with-basic-authentication-plugin-90f3529043f3)
 - \[**Medium**\] [**Implementing and Securing a Simple Spring Boot REST API with Keycloak**](https://medium.com/@ivangfr/how-to-secure-a-spring-boot-app-with-keycloak-5a931ee12c5a)
 - \[**Medium**\] [**Implementing and Securing a Simple Spring Boot UI (Thymeleaf + RBAC) with Keycloak**](https://medium.com/spring-boot/how-to-secure-a-simple-spring-boot-ui-thymeleaf-rbac-with-keycloak-ba9f30b9cb2b)
 - \[**Medium**\] [**Implementing and Securing a Spring Boot GraphQL API with Keycloak**](https://medium.com/javarevisited/implementing-and-securing-a-spring-boot-graphql-api-with-keycloak-c461c86e3972)
-- \[**Medium**\] [**Building a Single Spring Boot App with Keycloak or Okta as IdP: Introduction**](https://medium.com/@ivangfr/building-a-single-spring-boot-app-with-keycloak-or-okta-as-idp-introduction-2814a4829aed)
 
 ## Project Diagram
 
@@ -214,7 +214,9 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Call again the private `GET /api/books` endpoint using the access token
   ```
-  curl -i localhost:8000/api/books -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
+  curl -i localhost:8000/api/books \
+    -H 'Host: book-service' \
+    -H "Authorization: Bearer $ACCESS_TOKEN"
   ```
   It should return
   ```
@@ -226,18 +228,24 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
   Create book
   ```
-  curl -i -X POST localhost:8000/api/books -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN" \
+  curl -i -X POST localhost:8000/api/books \
+    -H 'Host: book-service' \
+    -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" -d '{"isbn": "123", "title": "Kong & Keycloak"}'
   ```
   
   Get book
   ```
-  curl -i localhost:8000/api/books/123 -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
+  curl -i localhost:8000/api/books/123 \
+    -H 'Host: book-service' \
+    -H "Authorization: Bearer $ACCESS_TOKEN"
   ```
   
   Delete book 
   ```
-  curl -i -X DELETE localhost:8000/api/books/123 -H 'Host: book-service' -H "Authorization: Bearer $ACCESS_TOKEN"
+  curl -i -X DELETE localhost:8000/api/books/123 \
+    -H 'Host: book-service' \
+    -H "Authorization: Bearer $ACCESS_TOKEN"
   ```
 
 ## Useful Links & Commands
