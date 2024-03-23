@@ -55,7 +55,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 mongo:6.0.6
+  docker run -d --name mongodb -p 27017:27017 mongo:7.0.6
   ```
 
 - Run the command below to start `book-service`
@@ -107,7 +107,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:6.0.6
+  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:7.0.6
   ```
 
 - Run the following command to start `book-service` Docker container
