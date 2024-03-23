@@ -281,15 +281,12 @@ To remove the Docker image created by this project, in a terminal and, inside `s
 
 ## Issues
 
-- Unable to put up and running kong `3.x` version;
-- When upgrading postgres to a version above `13.x` (using current kong version), there is an error while running `kong-database migration`
+- Unable to upgrade to `kong` version `3.x` because `BasePlugin` class was deprecated in `kong` version `2.4.x` and removed in version `3.0.x` [link](https://support.konghq.com/support/s/article/Custom-plugins-not-loading-with-no-LuaRocks-module-found-for-kong-plugins-base-plugin). Now, `kong-oidc` needs to support `kong` version `3.x` [issue](https://github.com/nokia/kong-oidc/issues/213);
+
+- When upgrading `postgres` to a version above `13.x` (using current kong version), there is an error while running `kong`
   ```
-  Running kong-database migration
-  -------------------------------
-  Error: module 'openssl.rand' not found:No LuaRocks module found for openssl.rand
+  [error] 1#0: init_by_lua error: /usr/local/share/lua/5.1/pgmoon/init.lua:273: module 'openssl.rand' not found:No LuaRocks module found for openssl.rand
   	no field package.preload['openssl.rand']
-  	no file './openssl/rand.lua'
-  	no file './openssl/rand/init.lua'
   	no file './openssl/rand.lua'
   	no file './openssl/rand/init.lua'
   	no file '/usr/local/openresty/site/lualib/openssl/rand.ljbc'
@@ -300,7 +297,6 @@ To remove the Docker image created by this project, in a terminal and, inside `s
   	no file '/usr/local/openresty/site/lualib/openssl/rand/init.lua'
   	no file '/usr/local/openresty/lualib/openssl/rand.lua'
   	no file '/usr/local/openresty/lualib/openssl/rand/init.lua'
-  	no file './openssl/rand.lua'
   	no file '/usr/local/openresty/luajit/share/luajit-2.1.0-beta3/openssl/rand.lua'
   	no file '/usr/local/share/lua/5.1/openssl/rand.lua'
   	no file '/usr/local/share/lua/5.1/openssl/rand/init.lua'
@@ -322,6 +318,57 @@ To remove the Docker image created by this project, in a terminal and, inside `s
   	no file '/usr/local/openresty/luajit/lib/lua/5.1/openssl.so'
   	no file '/usr/local/lib/lua/5.1/loadall.so'
   	no file '/home/kong/.luarocks/lib/lua/5.1/openssl.so'
-  
-    Run with --v (verbose) or --vv (debug) for more details
+  stack traceback:
+  	[C]: in function 'require'
+  	/usr/local/share/lua/5.1/pgmoon/init.lua:273: in function 'auth'
+  	/usr/local/share/lua/5.1/pgmoon/init.lua:213: in function 'connect'
+  	.../share/lua/5.1/kong/db/strategies/postgres/connector.lua:216: in function 'connect'
+  	.../share/lua/5.1/kong/db/strategies/postgres/connector.lua:516: in function 'query'
+  	.../share/lua/5.1/kong/db/strategies/postgres/connector.lua:284: in function 'init'
+  	/usr/local/share/lua/5.1/kong/db/init.lua:141: in function 'init_connector'
+  	/usr/local/share/lua/5.1/kong/init.lua:503: in function 'init'
+  	init_by_lua:3: in main chunk
+  nginx: [error] init_by_lua error: /usr/local/share/lua/5.1/pgmoon/init.lua:273: module 'openssl.rand' not found:No LuaRocks module found for openssl.rand
+  	no field package.preload['openssl.rand']
+  	no file './openssl/rand.lua'
+  	no file './openssl/rand/init.lua'
+  	no file '/usr/local/openresty/site/lualib/openssl/rand.ljbc'
+  	no file '/usr/local/openresty/site/lualib/openssl/rand/init.ljbc'
+  	no file '/usr/local/openresty/lualib/openssl/rand.ljbc'
+  	no file '/usr/local/openresty/lualib/openssl/rand/init.ljbc'
+  	no file '/usr/local/openresty/site/lualib/openssl/rand.lua'
+  	no file '/usr/local/openresty/site/lualib/openssl/rand/init.lua'
+  	no file '/usr/local/openresty/lualib/openssl/rand.lua'
+  	no file '/usr/local/openresty/lualib/openssl/rand/init.lua'
+  	no file '/usr/local/openresty/luajit/share/luajit-2.1.0-beta3/openssl/rand.lua'
+  	no file '/usr/local/share/lua/5.1/openssl/rand.lua'
+  	no file '/usr/local/share/lua/5.1/openssl/rand/init.lua'
+  	no file '/usr/local/openresty/luajit/share/lua/5.1/openssl/rand.lua'
+  	no file '/usr/local/openresty/luajit/share/lua/5.1/openssl/rand/init.lua'
+  	no file '/home/kong/.luarocks/share/lua/5.1/openssl/rand.lua'
+  	no file '/home/kong/.luarocks/share/lua/5.1/openssl/rand/init.lua'
+  	no file '/usr/local/openresty/site/lualib/openssl/rand.so'
+  	no file '/usr/local/openresty/lualib/openssl/rand.so'
+  	no file './openssl/rand.so'
+  	no file '/usr/local/lib/lua/5.1/openssl/rand.so'
+  	no file '/usr/local/openresty/luajit/lib/lua/5.1/openssl/rand.so'
+  	no file '/usr/local/lib/lua/5.1/loadall.so'
+  	no file '/home/kong/.luarocks/lib/lua/5.1/openssl/rand.so'
+  	no file '/usr/local/openresty/site/lualib/openssl.so'
+  	no file '/usr/local/openresty/lualib/openssl.so'
+  	no file './openssl.so'
+  	no file '/usr/local/lib/lua/5.1/openssl.so'
+  	no file '/usr/local/openresty/luajit/lib/lua/5.1/openssl.so'
+  	no file '/usr/local/lib/lua/5.1/loadall.so'
+  	no file '/home/kong/.luarocks/lib/lua/5.1/openssl.so'
+  stack traceback:
+  	[C]: in function 'require'
+  	/usr/local/share/lua/5.1/pgmoon/init.lua:273: in function 'auth'
+  	/usr/local/share/lua/5.1/pgmoon/init.lua:213: in function 'connect'
+  	.../share/lua/5.1/kong/db/strategies/postgres/connector.lua:216: in function 'connect'
+  	.../share/lua/5.1/kong/db/strategies/postgres/connector.lua:516: in function 'query'
+  	.../share/lua/5.1/kong/db/strategies/postgres/connector.lua:284: in function 'init'
+  	/usr/local/share/lua/5.1/kong/db/init.lua:141: in function 'init_connector'
+  	/usr/local/share/lua/5.1/kong/init.lua:503: in function 'init'
+  	init_by_lua:3: in main chunk
   ```
