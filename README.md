@@ -1,6 +1,6 @@
 # springboot-kong-keycloak
 
-The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) application to manage books, called `book-service` and secure it by using [`Kong`](https://konghq.com/kong/) API gateway and [`Keycloak`](https://www.keycloak.org) OpenID Connect Provider.
+The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/index.html) application to manage books, called `book-service` and secure it by using [`Kong`](https://konghq.com/products/kong-gateway) API gateway and [`Keycloak`](https://www.keycloak.org) OpenID Connect Provider.
 
 > **Note**: In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/book-service-kong-keycloak) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
 
@@ -11,9 +11,9 @@ On [ivangfr.github.io](https://ivangfr.github.io), I have compiled my Proof-of-C
 ## Additional Readings
 
 - \[**Medium**\] [**Using Kong to secure a Simple Spring Boot REST API with Kong OIDC plugin and Keycloak**](https://medium.com/@ivangfr/using-kong-to-secure-a-simple-spring-boot-rest-api-with-kong-oidc-plugin-and-keycloak-c8fa8de32e6e)
-- \[**Medium**\] [**Using Kong to secure a Simple Spring Boot REST API with Basic Authentication plugin**](https://medium.com/javarevisited/using-kong-to-secure-a-simple-spring-boot-rest-api-with-basic-authentication-plugin-90f3529043f3)
-- \[**Medium**\] [**Using Kong to secure a Simple Spring Boot REST API with LDAP Authentication plugin**](https://medium.com/javarevisited/using-kong-to-secure-a-simple-spring-boot-rest-api-with-ldap-authentication-plugin-3a499e01382a)
-- \[**Medium**\] [**Using Kong to configure Rate Limiting to a Simple Spring Boot REST API**](https://medium.com/javarevisited/using-kong-to-configure-rate-limiting-to-a-simple-spring-boot-rest-api-33b1899077d)
+- \[**Medium**\] [**Using Kong to secure a Simple Spring Boot REST API with Basic Authentication plugin**](https://medium.com/@ivangfr/using-kong-to-secure-a-simple-spring-boot-rest-api-with-basic-authentication-plugin-90f3529043f3)
+- \[**Medium**\] [**Using Kong to secure a Simple Spring Boot REST API with LDAP Authentication plugin**](https://medium.com/@ivangfr/using-kong-to-secure-a-simple-spring-boot-rest-api-with-ldap-authentication-plugin-3a499e01382a)
+- \[**Medium**\] [**Using Kong to configure Rate Limiting to a Simple Spring Boot REST API**](https://medium.com/@ivangfr/using-kong-to-configure-rate-limiting-to-a-simple-spring-boot-rest-api-33b1899077d)
 - \[**Medium**\] [**Implementing and Securing a Simple Spring Boot REST API with Keycloak**](https://medium.com/@ivangfr/how-to-secure-a-spring-boot-app-with-keycloak-5a931ee12c5a)
 
 ## Project Diagram
@@ -45,9 +45,9 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 ## Prerequisites
 
-- [`Java 17+`](https://www.oracle.com/java/technologies/downloads/#java17)
+- [`Java 21+`](https://www.oracle.com/java/technologies/downloads/#java21)
 - [`Docker`](https://www.docker.com/)
-- [`jq`](https://stedolan.github.io/jq)
+- [`jq`](https://jqlang.github.io/jq/)
 
 ## Run application during development using Maven
 
@@ -55,7 +55,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 mongo:7.0.6
+  docker run -d --name mongodb -p 27017:27017 mongo:7.0.14
   ```
 
 - Run the command below to start `book-service`
@@ -107,7 +107,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:7.0.6
+  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:7.0.14
   ```
 
 - Run the following command to start `book-service` Docker container
