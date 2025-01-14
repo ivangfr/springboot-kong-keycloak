@@ -45,8 +45,8 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 ## Prerequisites
 
-- [`Java 21+`](https://www.oracle.com/java/technologies/downloads/#java21)
-- [`Docker`](https://www.docker.com/)
+- [`Java 21`](https://www.oracle.com/java/technologies/downloads/#java21) or higher;
+- A containerization tool (e.g., [`Docker`](https://www.docker.com), [`Podman`](https://podman.io), etc.)
 - [`jq`](https://jqlang.github.io/jq/)
 
 ## Run application during development using Maven
@@ -55,7 +55,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 mongo:7.0.14
+  docker run -d --name mongodb -p 27017:27017 mongo:8.0.3
   ```
 
 - Run the command below to start `book-service`
@@ -86,11 +86,11 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 - Build Docker Image
   - JVM
     ```
-    ./docker-build.sh
+    ./build-docker-images.sh
     ```
   - Native
     ```
-    ./docker-build.sh native
+    ./build-docker-images.sh native
     ```
 
   | Environment Variable | Description                                                       |
@@ -107,7 +107,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - Run the command below to start `mongodb` Docker container
   ```
-  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:7.0.14
+  docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:8.0.3
   ```
 
 - Run the following command to start `book-service` Docker container
