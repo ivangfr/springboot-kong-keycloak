@@ -1,6 +1,6 @@
-package com.ivanfranchin.bookservice.model;
+package com.ivanfranchin.bookservice.book.model;
 
-import com.ivanfranchin.bookservice.rest.dto.CreateBookRequest;
+import com.ivanfranchin.bookservice.book.dto.CreateBookRequest;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;

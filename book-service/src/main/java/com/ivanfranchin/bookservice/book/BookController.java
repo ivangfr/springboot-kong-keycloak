@@ -1,9 +1,8 @@
-package com.ivanfranchin.bookservice.rest;
+package com.ivanfranchin.bookservice.book;
 
-import com.ivanfranchin.bookservice.model.Book;
-import com.ivanfranchin.bookservice.rest.dto.BookResponse;
-import com.ivanfranchin.bookservice.rest.dto.CreateBookRequest;
-import com.ivanfranchin.bookservice.service.BookService;
+import com.ivanfranchin.bookservice.book.model.Book;
+import com.ivanfranchin.bookservice.book.dto.BookResponse;
+import com.ivanfranchin.bookservice.book.dto.CreateBookRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

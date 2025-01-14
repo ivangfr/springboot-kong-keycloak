@@ -1,6 +1,6 @@
-package com.ivanfranchin.bookservice.rest.dto;
+package com.ivanfranchin.bookservice.book.dto;
 
-import com.ivanfranchin.bookservice.model.Book;
+import com.ivanfranchin.bookservice.book.model.Book;
 
 public record BookResponse(String id, String isbn, String title) {
 

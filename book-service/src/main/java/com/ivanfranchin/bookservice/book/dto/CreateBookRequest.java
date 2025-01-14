@@ -1,4 +1,4 @@
-package com.ivanfranchin.bookservice.rest.dto;
+package com.ivanfranchin.bookservice.book.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

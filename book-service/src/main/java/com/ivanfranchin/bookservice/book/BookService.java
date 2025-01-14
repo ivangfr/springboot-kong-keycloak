@@ -1,9 +1,8 @@
-package com.ivanfranchin.bookservice.service;
+package com.ivanfranchin.bookservice.book;
 
-import com.ivanfranchin.bookservice.exception.BookDuplicateIsbnException;
-import com.ivanfranchin.bookservice.exception.BookNotFoundException;
-import com.ivanfranchin.bookservice.repository.BookRepository;
-import com.ivanfranchin.bookservice.model.Book;
+import com.ivanfranchin.bookservice.book.exception.BookDuplicateIsbnException;
+import com.ivanfranchin.bookservice.book.exception.BookNotFoundException;
+import com.ivanfranchin.bookservice.book.model.Book;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -12,16 +11,14 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class BookServiceImpl implements BookService {
+public class BookService {
 
     private final BookRepository bookRepository;
 
-    @Override
     public List<Book> getBooks() {
         return bookRepository.findAll();
     }
 
-    @Override
     public Book saveBook(Book book) {
         try {
             return bookRepository.save(book);
@@ -30,12 +27,10 @@ public class BookServiceImpl implements BookService {
         }
     }
 
-    @Override
     public void deleteBook(Book book) {
         bookRepository.delete(book);
     }
 
-    @Override
     public Book validateAndGetBookByIsbn(String isbn) {
         return bookRepository.findByIsbn(isbn).orElseThrow(() -> new BookNotFoundException(isbn));
     }
