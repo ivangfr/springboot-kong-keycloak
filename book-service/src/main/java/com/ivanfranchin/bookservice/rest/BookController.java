@@ -1,6 +1,5 @@
 package com.ivanfranchin.bookservice.rest;
 
-import com.ivanfranchin.bookservice.mapper.BookMapper;
 import com.ivanfranchin.bookservice.model.Book;
 import com.ivanfranchin.bookservice.rest.dto.BookResponse;
 import com.ivanfranchin.bookservice.rest.dto.CreateBookRequest;
@@ -29,29 +28,27 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookService bookService;
-    private final BookMapper bookMapper;
 
     @GetMapping
     public List<BookResponse> getBooks(HttpServletRequest request) {
         log.info("Get books made by {}", request.getHeader("x-username"));
         List<Book> books = bookService.getBooks();
-        return books.stream().map(bookMapper::toBookResponse).collect(Collectors.toList());
+        return books.stream().map(BookResponse::from).collect(Collectors.toList());
     }
 
     @GetMapping("/{isbn}")
     public BookResponse getBookByIsbn(@PathVariable String isbn, HttpServletRequest request) {
         log.info("Get books with isbn equals to {} made by {}", isbn, request.getHeader("x-username"));
         Book book = bookService.validateAndGetBookByIsbn(isbn);
-        return bookMapper.toBookResponse(book);
+        return BookResponse.from(book);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public BookResponse createBook(@Valid @RequestBody CreateBookRequest createBookRequest, HttpServletRequest request) {
         log.info("Request to create a book {} made by {}", createBookRequest, request.getHeader("x-username"));
-        Book book = bookMapper.toBook(createBookRequest);
-        book = bookService.saveBook(book);
-        return bookMapper.toBookResponse(book);
+        Book book = bookService.saveBook(Book.from(createBookRequest));
+        return BookResponse.from(book);
     }
 
     @DeleteMapping("/{isbn}")
@@ -59,6 +56,6 @@ public class BookController {
         log.info("Request to remove book with isbn {} made by {}", isbn, request.getHeader("x-username"));
         Book book = bookService.validateAndGetBookByIsbn(isbn);
         bookService.deleteBook(book);
-        return bookMapper.toBookResponse(book);
+        return BookResponse.from(book);
     }
 }
