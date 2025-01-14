@@ -75,8 +75,8 @@ echo "-----------------"
 docker run -d \
   --name keycloak \
   -p 8080:8080 \
-  -e KEYCLOAK_ADMIN=admin \
-  -e KEYCLOAK_ADMIN_PASSWORD=admin \
+  -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+  -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
   -e KC_DB=mysql \
   -e KC_DB_URL_HOST=keycloak-database \
   -e KC_DB_URL_DATABASE=keycloak \
