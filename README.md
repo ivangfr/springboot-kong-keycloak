@@ -2,6 +2,8 @@
 
 The goal is to create a [`Spring Boot`](https://docs.spring.io/spring-boot/index.html) application to manage books, called `book-service` and secure it by using [`Kong`](https://konghq.com/products/kong-gateway) API gateway and [`Keycloak`](https://www.keycloak.org) OpenID Connect Provider.
 
+> **Important**: Since the [nokia/kong-oidc](https://github.com/nokia/kong-oidc) plugin is no longer maintained (for example, it currently doesn’t support Kong version 3), this project will no longer be updated.
+
 > **Note**: In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/book-service-kong-keycloak) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
 
 ## Proof-of-Concepts & Articles
